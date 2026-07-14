@@ -71,3 +71,7 @@ personal. `TODO.md` is current-state only (resolved decisions move to the
 journal); `SESSIONS.md` is append-only. The failure mode of every handoff
 system is the state file going stale — if you keep forgetting to run
 `/baton:handoff`, wire a SessionEnd reminder hook.
+
+## License
+
+MIT — see [LICENSE](LICENSE).

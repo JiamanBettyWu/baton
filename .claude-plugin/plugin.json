@@ -1,0 +1,8 @@
+{
+  "name": "baton",
+  "description": "Decision-aware session handoffs for Claude Code — pause work on a team decision, pick it back up without re-explaining anything.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Betty Wu"
+  }
+}

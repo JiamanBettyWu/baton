@@ -41,7 +41,8 @@ personal website repo. Not yet dogfooded in mise. Detail in
 2. Dogfood in mise: end the next mise session with `/baton:handoff` and
    judge the SESSIONS.md entry against Betty's own entries — the convention
    it was modeled on is the strictest test of format fidelity.
-3. Later, when stable: flip repo visibility public
-   (`gh repo edit JiamanBettyWu/baton --visibility public`), then the work
-   port — copy to work laptop, test the skills-only degraded install
-   documented in README, and submit to the company skill marketplace.
+3. Work port (repo is public as of 2026-07-13, so plain clone works): clone
+   on the work laptop, check the company's plugin policy, test — falling
+   back to the skills-only degraded install from the README if plugins/hooks
+   are locked down. Once proven in daily use, go through the company's
+   formal registration to list it on the internal skill marketplace.

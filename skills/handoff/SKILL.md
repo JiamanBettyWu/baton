@@ -16,7 +16,13 @@ If the user provided extra context, weave it in: $ARGUMENTS
 2. Otherwise, use the default convention: **`TODO.md`** (forward-looking,
    kept current) and **`SESSIONS.md`** (append-only dated journal), both at
    the project root.
-   - If they don't exist, initialize them from the templates below.
+   - If they don't exist, initialize them from the templates below. **Both
+     files are mandatory after a handoff — never skip TODO.md because there
+     are no pending tasks.** The session-start hook only injects context when
+     both files exist, and TODO.md's load-bearing section is "Current state"
+     (which always has content), not the task list. With nothing pending,
+     write the current-state pointer and put "(nothing pending)" under "Pick
+     up here".
    - If a `TODO.md` already exists with a different structure, do not
      overwrite it — graft the missing sections (Current state, Open
      decisions) into it and say so.

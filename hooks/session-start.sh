@@ -17,6 +17,11 @@ if [ -f "$TODO" ] && [ -f "$SESSIONS" ]; then
   echo
   LATEST=$(grep -m1 '^## ' "$SESSIONS")
   echo "(Latest journal entry: ${LATEST#\#\# }. Read the relevant dated entry in SESSIONS.md when a task resumes an older thread. Suggest /baton:handoff before the session ends; if the user reports a team decision, suggest /baton:decide.)"
+elif [ -f "$SESSIONS" ]; then
+  # Journal without a forward-looking file: still surface continuity, and
+  # flag that the next /baton:handoff should initialize TODO.md.
+  LATEST=$(grep -m1 '^## ' "$SESSIONS")
+  echo "This project keeps a dated session journal in SESSIONS.md (latest entry: ${LATEST#\#\# }) but has no TODO.md current-state file yet. Read the latest journal entry to catch up; the next /baton:handoff should initialize TODO.md."
 fi
 
 exit 0

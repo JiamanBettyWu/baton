@@ -8,8 +8,8 @@ Forward-looking state. Session history lives in [SESSIONS.md](SESSIONS.md).
 [JiamanBettyWu/baton](https://github.com/JiamanBettyWu/baton), **installed
 for daily use** (symlinked at `~/.claude/skills/baton`, so working-copy edits
 are live — `/reload-plugins` mid-session), and first-tested on Betty's
-personal website repo. Not yet dogfooded in mise. Detail in
-[SESSIONS.md](SESSIONS.md).
+personal website repo. Now **MIT-licensed** (`89f3be8`). Not yet dogfooded in
+mise. Detail in [SESSIONS.md](SESSIONS.md).
 
 ## Open decisions
 

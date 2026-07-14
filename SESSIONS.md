@@ -6,6 +6,20 @@ done, what was decided and why. History only; for what to do next see
 
 ---
 
+## 2026-07-13 (added MIT license)
+
+Short session. Added an MIT `LICENSE` (root) and a `## License` section to the
+README, committed and pushed (`89f3be8`). Reasoning: the repo had gone public
+earlier the same day, and public-with-no-license is the worst case — code is
+readable but under default copyright it's "all rights reserved," so nobody can
+legally fork or build on it. MIT was the right fit here because Betty owns the
+code outright (built this session, no employer IP), and the driver is
+portfolio/community use rather than monetization — so the irreversibility of
+MIT for released versions isn't a concern. Copyright line: "Jiaman Wu".
+GitHub's About sidebar should now show the MIT badge.
+
+---
+
 ## 2026-07-13 (baton v0.1: built, redesigned against mise, pushed)
 
 Built the whole plugin in one session, starting from Betty's friction: Claude

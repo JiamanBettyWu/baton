@@ -25,7 +25,7 @@ your first prompt.
 
 | Skill | When | What it does |
 | --- | --- | --- |
-| `/baton:handoff [notes]` | End of a session, or before pausing for alignment | Appends a dated journal entry to `SESSIONS.md`, refreshes `TODO.md`; initializes both files in a fresh project; prints open decisions ready to paste to your team |
+| `/baton:handoff [notes]` | End of a session, or before pausing for alignment | Sweeps the session for loose ends and stale docs, appends a dated journal entry to `SESSIONS.md`, refreshes `TODO.md`, and commits both (never pushes); initializes both files in a fresh project; archives the journal once it passes ~500 lines; prints open decisions ready to paste to your team |
 | `/baton:decide <outcome>` | The team decided | Logs the decision + reasoning to the journal, promotes the matching "if" branch of the plan in `TODO.md`, flags work the outcome invalidated |
 
 The hook (on startup, resume, and `/clear`) activates only when **both** files
@@ -66,9 +66,10 @@ the project keeps `TODO.md` + `SESSIONS.md` at the root.
 ## Notes
 
 The files are ordinary markdown — human-readable, human-editable, reviewable
-in git. Commit them if teammates use Claude Code too; `.gitignore` them if
-personal. `TODO.md` is current-state only (resolved decisions move to the
-journal); `SESSIONS.md` is append-only. The failure mode of every handoff
+in git. `/baton:handoff` commits them for you — scoped to just these files,
+never pushed — so the context travels with the repo and teammates on Claude
+Code pick it up for free. `TODO.md` is current-state only (resolved decisions
+move to the journal); `SESSIONS.md` is append-only. The failure mode of every handoff
 system is the state file going stale — if you keep forgetting to run
 `/baton:handoff`, wire a SessionEnd reminder hook.
 

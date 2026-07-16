@@ -6,6 +6,74 @@ done, what was decided and why. History only; for what to do next see
 
 ---
 
+## 2026-07-15 (handoff skill: format, auto-commit, sweep + rotation)
+
+Improvements to `skills/handoff/SKILL.md` (`1367f29`), starting from two gaps
+Betty spotted on the new-repo path and growing into a round of handoff
+hardening. All design forks below were Betty's calls; I pushed back where her
+first framing had a sharp edge.
+
+**Explicit entry format on init.** The old init template collapsed a whole
+journal entry into one vague `<Narrative: …>` placeholder, so a brand-new
+repo's *first* SESSIONS.md entry had no shape to imitate. Replaced it with a
+guided-narrative skeleton naming the beats (what shipped + refs, what was
+abandoned + why, decisions + reasoning) plus the bold-sub-label pattern.
+Decision — guided narrative over rigid structured-fields or a hybrid (Betty
+picked from a three-way preview): the journal is mined months later for blog
+posts and parked-thread resumption, and flowing prose reads better than
+bulleted form fields.
+
+**Auto-commit the handoff.** The skill wrote files but never committed them.
+New `## Commit the handoff` step: `git add` the touched files *by path*
+(`TODO.md`/`SESSIONS.md`/`DECISIONS.md` if present) — which is what picks up
+new, untracked files on a repo's first handoff, Betty's specific ask.
+Deliberately **never `git add -A`** so a handoff can't hijack unrelated
+working-tree changes; message `Handoff: <title>`; **no push** (stays manual);
+silent skip outside a git repo. Dogfooded live: ran the handoff with the
+uncommitted SKILL.md sitting in the tree and confirmed the commit picked up
+only TODO/SESSIONS, leaving SKILL.md alone — proof the scoped-add works.
+
+**Proactive pre-write sweep.** New `## Before writing: sweep the session` step:
+scan for loose ends (uncommitted changes, new TODO/FIXME, failing tests,
+unmerged branches) → TODO.md "Pick up here"; owner-blocking flags → a new
+"Needs attention" section (a flag, not an option-and-recommendation fork like
+"Open decisions"); and documentation drift. The doc-drift rule took two passes
+to settle. First cut, after pushback: **flag + offer, never silent rewrite** —
+auto-editing a doc during a handoff would land it uncommitted and inconsistent
+with the scoped commit. Betty then refined it to the final rule: **auto-update
+when the drift is caused by *this session's own changes* and the fix is
+unambiguous** (you have the context, it's traceable, and the fixed doc just
+gets added to the handoff commit), touching only what drifted; **flag only when
+the drift isn't traceable to this session or the fix is ambiguous** — there
+you'd be guessing at intent/history you don't have. The sweep earned its keep
+on the spot: it caught that `README.md` had gone stale *from this very
+session's* auto-commit change — the skills table omitted the new behavior, and
+the Notes section still told the user committing the files was their choice.
+Both traceable and unambiguous, so under the refined rule the handoff
+auto-updated the README (only the two drifted spots) and committed it alongside
+the state files. That's the doc-drift rule dogfooding itself on the change that
+created it.
+
+**Rotate SESSIONS.md when it grows.** New step: at ~500 lines, `git mv` the
+journal to `sessions/<date-range>.md` and start a fresh one with a pointer.
+Reframe that lowered this from urgent to nice-to-have (advisor-confirmed
+against `session-start.sh:18`): the hook **never loads the journal body**, only
+greps the latest entry's date — so length is a navigability/git-hygiene cost,
+not a context/token cost. Whole-file `git mv` over splitting entries by hand
+(can't drop content); **announced + confirmed, never a silent move** (Betty's
+call) — consistent with the scoped-commit trust property. Not yet exercised
+against a real 500-line file.
+
+**Course-correct (worth recording):** an earlier draft of this entry claimed
+`/baton:decide` writes a `DECISIONS.md` — wrong. The advisor caught it; I'd
+conflated it with the *parked* `/baton:why` idea (the only thing that would
+create DECISIONS.md). `decide` writes SESSIONS.md + TODO.md, same as handoff —
+and shares the same not-yet-committed gap. Fixed before push since nothing had
+shipped. Lesson baked into `[[handoff]]`'s own advice: read the file, don't
+infer from an adjacent note.
+
+---
+
 ## 2026-07-13 (added MIT license)
 
 Short session. Added an MIT `LICENSE` (root) and a `## License` section to the

@@ -4,16 +4,25 @@ Forward-looking state. Session history lives in [SESSIONS.md](SESSIONS.md).
 
 ## Current state
 
-**As of 2026-07-13 (latest session):** v0.1 is built, pushed private to
-[JiamanBettyWu/baton](https://github.com/JiamanBettyWu/baton), **installed
-for daily use** (symlinked at `~/.claude/skills/baton`, so working-copy edits
-are live — `/reload-plugins` mid-session), and first-tested on Betty's
-personal website repo. Now **MIT-licensed** (`89f3be8`). Not yet dogfooded in
-mise. Detail in [SESSIONS.md](SESSIONS.md).
+**As of 2026-07-15 (latest session):** v0.1 built, public at
+[JiamanBettyWu/baton](https://github.com/JiamanBettyWu/baton), MIT-licensed,
+**installed for daily use** (symlinked at `~/.claude/skills/baton`, edits live
+via `/reload-plugins`). This session hardened the handoff skill (`1367f29`)
+with **explicit guided-narrative entry format**, **scoped auto-commit**, a
+**proactive pre-write sweep** (with a doc-drift rule that auto-updates
+session-traceable drift and flags the rest), and **journal rotation** at ~500
+lines. Dogfooded format/commit/sweep on baton itself — the sweep caught real
+README drift and auto-fixed it under the new rule. **Not yet pushed.** Detail
+in [SESSIONS.md](SESSIONS.md).
 
 ## Open decisions
 
 (none — nothing currently blocked on an outside call)
+
+## Needs attention
+
+- ⚠️ **Rotation is unexercised** — the ~500-line archive path has never run
+  against a real oversized journal; watch the first real rotation.
 
 ## Scratch — not yet promoted
 
@@ -36,13 +45,16 @@ mise. Detail in [SESSIONS.md](SESSIONS.md).
 
 ## Pick up here
 
-1. Fold in findings from the personal-website-repo test — tune the handoff
-   skill's wording from whatever drifted.
-2. Dogfood in mise: end the next mise session with `/baton:handoff` and
+1. Push this session's work (`1367f29` + the handoff commit) — ready to go;
+   README is already reconciled.
+2. Mirror the auto-commit step into `/baton:decide` (it writes SESSIONS.md +
+   TODO.md but never commits them — same gap handoff just closed).
+3. Dogfood in mise: end the next mise session with `/baton:handoff` and
    judge the SESSIONS.md entry against Betty's own entries — the convention
    it was modeled on is the strictest test of format fidelity.
-3. Work port (repo is public as of 2026-07-13, so plain clone works): clone
-   on the work laptop, check the company's plugin policy, test — falling
-   back to the skills-only degraded install from the README if plugins/hooks
-   are locked down. Once proven in daily use, go through the company's
-   formal registration to list it on the internal skill marketplace.
+
+**Later —** work port (repo public as of 2026-07-13, so plain clone works):
+clone on the work laptop, check the company's plugin policy, test — falling
+back to the skills-only degraded install from the README if plugins/hooks are
+locked down. Once proven in daily use, go through the company's formal
+registration to list it on the internal skill marketplace.

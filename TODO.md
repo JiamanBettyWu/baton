@@ -12,8 +12,10 @@ with **explicit guided-narrative entry format**, **scoped auto-commit**, a
 **proactive pre-write sweep** (with a doc-drift rule that auto-updates
 session-traceable drift and flags the rest), and **journal rotation** at ~500
 lines. Dogfooded format/commit/sweep on baton itself — the sweep caught real
-README drift and auto-fixed it under the new rule. **Not yet pushed.** Detail
-in [SESSIONS.md](SESSIONS.md).
+README drift and auto-fixed it under the new rule (`1367f29`/`f9dbacf`, pushed).
+Follow-up (`f575bc3`, **not yet pushed**): renamed the planned `/baton:why`
+output `DECISIONS.md` → `BECAUSE.md` and dropped its phantom forward-reference
+from the handoff skill. Detail in [SESSIONS.md](SESSIONS.md).
 
 ## Open decisions
 
@@ -34,8 +36,10 @@ in [SESSIONS.md](SESSIONS.md).
   review threads is already a decision graph). Design: NOT a batch pass over
   all commits (rung-3 trap) — a skill that answers one "why" question by
   running the archaeology ritual (`git log -L`, `git log -S` pickaxe,
-  `gh pr view`), then **persists the finding** to a `DECISIONS.md`: question,
-  answer, evidence trail (SHAs/PR links), confidence. A query cache for
+  `gh pr view`), then **persists the finding** to a `BECAUSE.md` (named for the
+  why→because pairing; *not* `DECISIONS.md`, which reads like `/baton:decide`
+  output — it isn't): question, answer, evidence trail (SHAs/PR links),
+  confidence. A query cache for
   institutional knowledge — the index grows exactly where real questions
   landed. Acceptance test before work port: ask it a "why" mise's git history
   answers (e.g. why `generate_output` moved before the gaps fork, #124) with
@@ -45,8 +49,8 @@ in [SESSIONS.md](SESSIONS.md).
 
 ## Pick up here
 
-1. Push this session's work (`1367f29` + the handoff commit) — ready to go;
-   README is already reconciled.
+1. Push the BECAUSE.md rename follow-up (`f575bc3` + this handoff commit) — the
+   handoff-hardening work is already on `origin/main`.
 2. Mirror the auto-commit step into `/baton:decide` (it writes SESSIONS.md +
    TODO.md but never commits them — same gap handoff just closed).
 3. Dogfood in mise: end the next mise session with `/baton:handoff` and

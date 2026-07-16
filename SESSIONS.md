@@ -6,6 +6,22 @@ done, what was decided and why. History only; for what to do next see
 
 ---
 
+## 2026-07-15 (rename planned /baton:why output → BECAUSE.md)
+
+Renamed the (still unbuilt) file that the parked `/baton:why` skill will persist
+findings to: `DECISIONS.md` → `BECAUSE.md` (`f575bc3`). Trigger: `DECISIONS.md`
+reads like `/baton:decide` output, but `decide` writes SESSIONS.md/TODO.md — the
+file belongs to `/baton:why`, the archaeology skill. The collision wasn't
+hypothetical — it made Claude misattribute the file earlier this same session
+(see the entry below). `BECAUSE.md` maps to the **why → because** pairing and
+kills the ambiguity. Also dropped the premature `DECISIONS.md if present`
+forward-reference from the handoff skill's commit-scope list: no shipped skill
+should point at a phantom file, so it'll be reintroduced (correctly named) when
+`/baton:why` is actually built. The `DECISIONS.md` mentions in the entry below
+are left as-is — append-only history, an accurate record of the old name.
+
+---
+
 ## 2026-07-15 (handoff skill: format, auto-commit, sweep + rotation)
 
 Improvements to `skills/handoff/SKILL.md` (`1367f29`), starting from two gaps

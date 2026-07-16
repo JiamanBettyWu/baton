@@ -51,6 +51,14 @@ drops. Fold what you find into the files below — don't just mention it in chat
     ambiguous — flag, don't edit.** List it under "Needs attention" and offer
     to update; editing here would mean guessing at intent or history you don't
     have.
+- **Oversized Scratch items → flag for extraction:** TODO.md is injected whole
+  at every session start, so it must stay lean. If a "Scratch" item has grown
+  past ~10 lines or sprouted internal structure (sub-sections, multiple bold
+  headers), it's a document wearing a bullet point's clothes. Flag it under
+  "Needs attention" and offer to extract it to its own file (e.g.
+  `docs/<idea>.md`), leaving a one-liner in Scratch: title, one-sentence hook,
+  link. Flag, don't auto-move — whether an idea deserves promotion is the
+  owner's call, and a silent relocation is easy to lose.
 
 ## What a handoff does
 

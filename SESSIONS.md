@@ -6,6 +6,37 @@ done, what was decided and why. History only; for what to do next see
 
 ---
 
+## 2026-07-15 (sweep rule: flag oversized Scratch items for extraction)
+
+Session started with Betty's question: does the SessionStart hook inject all
+of SESSIONS.md? Answer (verified against `hooks/session-start.sh:14-19`): no —
+the hook injects **all of TODO.md** but only the latest journal entry's
+*title*, so the journal lazy-loads by design and can grow indefinitely at flat
+session-start cost. That surfaced the real exposure: **TODO.md itself is
+injected whole and had no size guard**, and its "Scratch" section is the
+natural bloat vector — the `/baton:why` blob there is already ~25 lines of
+design prose.
+
+**The fix (`1ae4aeb`):** added a sweep rule to `skills/handoff/SKILL.md` —
+when a Scratch item passes ~10 lines or sprouts internal structure
+(sub-sections, multiple bold headers), flag it under "Needs attention" and
+offer extraction to its own doc (e.g. `docs/<idea>.md`), leaving a one-liner
+in Scratch: title, hook, link. **Flag, don't auto-move** — deliberately
+consistent with the doc-drift rule's traceable-vs-ambiguous split: whether an
+idea deserves promotion is the owner's call, and a silent relocation is easy
+to lose. The structural trigger (not just line count) was chosen because a
+blob with sub-headers is already "a document wearing a bullet point's
+clothes" regardless of length.
+
+Also pushed the backlog: `f575bc3` (BECAUSE.md rename) + `1ae4aeb` went to
+`origin/main`, clearing item 1 of the previous "Pick up here". Betty then ran
+`/reload-plugins` and invoked this handoff as the live test of the new rule —
+which fired on its first run: the `/baton:why` Scratch item is this handoff's
+own first "Needs attention" extraction flag. Rule shipped and triggered in
+the same session.
+
+---
+
 ## 2026-07-15 (rename planned /baton:why output → BECAUSE.md)
 
 Renamed the (still unbuilt) file that the parked `/baton:why` skill will persist

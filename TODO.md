@@ -4,18 +4,13 @@ Forward-looking state. Session history lives in [SESSIONS.md](SESSIONS.md).
 
 ## Current state
 
-**As of 2026-07-15 (latest session):** v0.1 built, public at
-[JiamanBettyWu/baton](https://github.com/JiamanBettyWu/baton), MIT-licensed,
-**installed for daily use** (symlinked at `~/.claude/skills/baton`, edits live
-via `/reload-plugins`). This session hardened the handoff skill (`1367f29`)
-with **explicit guided-narrative entry format**, **scoped auto-commit**, a
-**proactive pre-write sweep** (with a doc-drift rule that auto-updates
-session-traceable drift and flags the rest), and **journal rotation** at ~500
-lines. Dogfooded format/commit/sweep on baton itself — the sweep caught real
-README drift and auto-fixed it under the new rule (`1367f29`/`f9dbacf`, pushed).
-Follow-up (`f575bc3`, **not yet pushed**): renamed the planned `/baton:why`
-output `DECISIONS.md` → `BECAUSE.md` and dropped its phantom forward-reference
-from the handoff skill. Detail in [SESSIONS.md](SESSIONS.md).
+**As of 2026-07-15 (latest session):** added a sweep rule to the handoff skill
+(`1ae4aeb`): Scratch items in TODO.md past ~10 lines (or with internal
+structure) get flagged for extraction to their own doc — because TODO.md is
+injected whole at every session start and had no size guard. All previously
+unpushed work (`f575bc3` + `1ae4aeb`) is now on `origin/main`. This handoff is
+the rule's first live run, and it fired (see "Needs attention"). Detail in
+[SESSIONS.md](SESSIONS.md).
 
 ## Open decisions
 
@@ -25,6 +20,10 @@ from the handoff skill. Detail in [SESSIONS.md](SESSIONS.md).
 
 - ⚠️ **Rotation is unexercised** — the ~500-line archive path has never run
   against a real oversized journal; watch the first real rotation.
+- ⚠️ **Scratch item oversized (new rule, first firing):** the `/baton:why`
+  blob below is ~18 lines of design prose. Offer: extract to
+  `docs/baton-why.md`, leaving a one-liner here (title, hook, link). Your
+  call — flag, not auto-move.
 
 ## Scratch — not yet promoted
 
@@ -49,10 +48,10 @@ from the handoff skill. Detail in [SESSIONS.md](SESSIONS.md).
 
 ## Pick up here
 
-1. Push the BECAUSE.md rename follow-up (`f575bc3` + this handoff commit) — the
-   handoff-hardening work is already on `origin/main`.
+1. Decide on the `/baton:why` Scratch extraction flagged above — extract to
+   `docs/baton-why.md` or leave in place.
 2. Mirror the auto-commit step into `/baton:decide` (it writes SESSIONS.md +
-   TODO.md but never commits them — same gap handoff just closed).
+   TODO.md but never commits them — same gap handoff closed on 2026-07-15).
 3. Dogfood in mise: end the next mise session with `/baton:handoff` and
    judge the SESSIONS.md entry against Betty's own entries — the convention
    it was modeled on is the strictest test of format fidelity.

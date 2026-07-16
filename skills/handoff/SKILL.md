@@ -175,12 +175,11 @@ After writing, commit the handoff so the record is durable and the journal is
 shareable — **even on a repo's first handoff, when the files are new and
 untracked:**
 
-- Stage **only** the files this handoff wrote or updated (the default set:
-  `TODO.md`, `SESSIONS.md`, and `DECISIONS.md` if present — plus any doc the
-  sweep updated under the traceable-drift rule above). `git add` them by path —
-  this is what picks up new, untracked files the first time. **Never
-  `git add -A`**: a handoff must not sweep unrelated working-tree changes into
-  the commit.
+- Stage **only** the files this handoff wrote or updated (`TODO.md`,
+  `SESSIONS.md`, plus any doc the sweep updated under the traceable-drift rule
+  above). `git add` them by path — this is what picks up new, untracked files
+  the first time. **Never `git add -A`**: a handoff must not sweep unrelated
+  working-tree changes into the commit.
 - If you rotated the journal, the `git mv` already staged the rename; also
   `git add` the fresh `SESSIONS.md` so both the archive and the new file land in
   the commit.

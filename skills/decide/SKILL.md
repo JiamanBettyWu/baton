@@ -9,6 +9,16 @@ The user is reporting the outcome of a decision the project was blocked on:
 
 > $ARGUMENTS
 
+## Where to write
+
+If the project documents its own session-notes convention (check CLAUDE.md /
+AGENTS.md for rules about session logs, current-state pointers, or open-decision
+tracking), **follow that convention exactly** — same files, same format. The
+journal and forward-looking doc names in the steps below then resolve to that
+project's files (e.g. `docs/session-log.md` and `docs/TODO.md`), not the
+defaults. Otherwise use baton's defaults: **`TODO.md`** and **`SESSIONS.md`** at
+the project root.
+
 1. Find the open decisions: TODO.md's "Open decisions" section (or wherever
    the project's own documented convention keeps them). If none exist, say so
    and offer to run `/baton:handoff` first instead.

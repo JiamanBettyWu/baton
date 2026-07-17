@@ -4,14 +4,11 @@ Forward-looking state. Session history lives in [SESSIONS.md](SESSIONS.md).
 
 ## Current state
 
-**As of 2026-07-15 (latest session):** added a sweep rule to the handoff skill
-(`1ae4aeb`): Scratch items in TODO.md past ~10 lines (or with internal
-structure) get flagged for extraction to their own doc — because TODO.md is
-injected whole at every session start and had no size guard. All previously
-unpushed work (`f575bc3` + `1ae4aeb`) is now on `origin/main`. This handoff is
-the rule's first live run: it fired on the `/baton:why` blob, which Betty then
-extracted to [docs/baton-why-design.md](docs/baton-why-design.md). Detail in
-[SESSIONS.md](SESSIONS.md).
+**As of 2026-07-17 (latest session):** shipped Betty's edit to
+`skills/decide/SKILL.md` (`aa3a3f6`, on `origin/main`) — a "Where to write"
+section giving `/baton:decide` the same follow-the-project's-own-convention
+behavior `/baton:handoff` already has. Reviewed, fixed three small typos,
+pushed. Working tree clean. Detail in [SESSIONS.md](SESSIONS.md).
 
 ## Open decisions
 

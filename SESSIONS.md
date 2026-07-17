@@ -6,6 +6,27 @@ done, what was decided and why. History only; for what to do next see
 
 ---
 
+## 2026-07-17 (decide skill: honor a project's own notes convention)
+
+Short review-and-ship session. Betty had hand-edited `skills/decide/SKILL.md`
+and asked for a check-then-push. Her edit adds a **"Where to write"** section
+to `/baton:decide` that mirrors the one already in `/baton:handoff`: if the
+target project documents its own session-notes convention (in CLAUDE.md /
+AGENTS.md), follow it exactly — the "journal" and "forward-looking doc" names
+in the numbered steps then resolve to that project's files (e.g.
+`docs/session-log.md`, `docs/TODO.md`) instead of baton's `SESSIONS.md` /
+`TODO.md` defaults. Good change: it closes a consistency gap where `decide`
+would have written to the defaults even in a project `handoff` correctly
+adapts to. Content shipped as Betty wrote it.
+
+Fixed three mechanical defects before pushing (`aa3a3f6`, pushed to
+origin/main at Betty's request): a `project;s` → `project's` semicolon typo, a
+missing comma in `docs/TODO.md`), not the defaults`, and trailing whitespace
+on two lines. Noted but did **not** act on the pre-existing `Skill should
+provide a name` diagnostic — it fires across all baton skills, which use
+folder-derived names plus a `description` field, so it's unrelated to this
+edit.
+
 ## 2026-07-15 (sweep rule: flag oversized Scratch items for extraction)
 
 Session started with Betty's question: does the SessionStart hook inject all

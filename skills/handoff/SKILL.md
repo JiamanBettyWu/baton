@@ -9,10 +9,12 @@ If the user provided extra context, weave it in: $ARGUMENTS
 
 ## Where to write
 
-1. If the project documents its own session-notes convention (check
-   CLAUDE.md / AGENTS.md for rules about session logs, current-state
-   pointers, or post-session sweeps), **follow that convention exactly** —
-   same files, same format, same length rules.
+1. If the project documents its own session-notes convention (check the
+   **project-level** CLAUDE.md / AGENTS.md for rules about session logs,
+   current-state pointers, or post-session sweeps), **follow that convention
+   exactly** — same files, same format, same length rules. The user's global
+   `~/.claude/CLAUDE.md` does not set a per-project convention; it only
+   counts if it explicitly states one that applies to all projects.
 2. Otherwise, use the default convention: **`TODO.md`** (forward-looking,
    kept current) and **`SESSIONS.md`** (append-only dated journal), both at
    the project root.
@@ -40,6 +42,10 @@ drops. Fold what you find into the files below — don't just mention it in chat
   a risky assumption baked into the code, a breaking change, or a
   secret/credential that was touched. This is a flag, not a fork — distinct from
   "Open decisions", which is option-and-recommendation shaped.
+  - **Trivially-safe hygiene fixes** (a missing `.gitignore` line, a typo'd
+    doc link — one-liners with no behavior change) may be *offered inline* in
+    the report-back instead of parked as a flag: state the fix, ask, apply on
+    approval in a separate commit. Anything with judgment in it stays a flag.
 - **Documentation drift → update when traceable, else flag:** if the session
   changed behavior, flags, or APIs, check whether README / CHANGELOG / other
   docs went stale.
@@ -95,6 +101,15 @@ delete old entries.
   SESSIONS.md 2026-07-10") instead of re-summarizing it.
 - **Capture the non-obvious** in the journal entry: environment quirks, dead
   ends explored, assumptions baked into the code.
+- **Don't duplicate the project's own knowledge files.** If the repo keeps a
+  decisions/lessons/ADR doc and this session already recorded something there,
+  the journal cites it ("principles recorded in docs/lessons_learned.md §13–16")
+  and keeps only the *narrative* — what happened and in what order. Two prose
+  copies of the same decision will drift.
+- **D-numbers are project-lifetime and never reused.** Next number = highest
+  D-number ever used + 1 — resolved decisions leave TODO.md, so check the
+  journal (`grep -o 'D[0-9]*' SESSIONS.md sessions/* | sort -u`) before
+  numbering a new one.
 - Keep TODO.md under ~100 lines; the narrative lives in SESSIONS.md.
 
 ## Templates (for initializing a project)

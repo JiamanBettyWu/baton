@@ -9,10 +9,12 @@ If the user provided extra context, weave it in: $ARGUMENTS
 
 ## Where to write
 
-1. If the project documents its own session-notes convention (check
-   CLAUDE.md / AGENTS.md for rules about session logs, current-state
-   pointers, or post-session sweeps), **follow that convention exactly** —
-   same files, same format, same length rules.
+1. If the project documents its own session-notes convention (check the
+   **project-level** CLAUDE.md / AGENTS.md for rules about session logs,
+   current-state pointers, or post-session sweeps), **follow that convention
+   exactly** — same files, same format, same length rules. The user's global
+   `~/.claude/CLAUDE.md` does not set a per-project convention; it only
+   counts if it explicitly states one that applies to all projects.
 2. Otherwise, use the default convention: **`TODO.md`** (forward-looking,
    kept current) and **`SESSIONS.md`** (append-only dated journal), both at
    the project root.
@@ -40,6 +42,10 @@ drops. Fold what you find into the files below — don't just mention it in chat
   a risky assumption baked into the code, a breaking change, or a
   secret/credential that was touched. This is a flag, not a fork — distinct from
   "Open decisions", which is option-and-recommendation shaped.
+  - **Trivially-safe hygiene fixes** (a missing `.gitignore` line, a typo'd
+    doc link — one-liners with no behavior change) may be *offered inline* in
+    the report-back instead of parked as a flag: state the fix, ask, apply on
+    approval in a separate commit. Anything with judgment in it stays a flag.
 - **Documentation drift → update when traceable, else flag:** if the session
   changed behavior, flags, or APIs, check whether README / CHANGELOG / other
   docs went stale.
@@ -80,6 +86,16 @@ delete old entries.
   ("If A: … / If B: …, including what gets reverted"). Number decisions
   sequentially for the life of the project (D1, D2, …). Write them so the
   user can paste the section into a message to their team.
+  - **What qualifies.** An open decision is a question whose answer changes
+    what gets built and that **cannot be settled yet** — missing evidence, or
+    someone else's call. If it already has costed options, a recommendation and
+    a definition of done, it is **work**, not a decision: put it wherever the
+    project tracks work (issue tracker, backlog, task list) and leave a pointer.
+    A decisions section that collects tasks is the most common reason TODO.md
+    outgrows its length budget, and TODO.md is injected whole at every session
+    start.
+  - Omit the section entirely when nothing is genuinely unsettled — an empty
+    heading invites the next handoff to refill it.
 - **Needs attention:** flags for the repo owner surfaced by the sweep above.
   Omit the section entirely when there's nothing to flag.
 - **Pick up here:** the next 2–3 concrete actions. Not a backlog.
@@ -95,7 +111,20 @@ delete old entries.
   SESSIONS.md 2026-07-10") instead of re-summarizing it.
 - **Capture the non-obvious** in the journal entry: environment quirks, dead
   ends explored, assumptions baked into the code.
-- Keep TODO.md under ~100 lines; the narrative lives in SESSIONS.md.
+- **Don't duplicate the project's own knowledge files.** If the repo keeps a
+  decisions/lessons/ADR doc and this session already recorded something there,
+  the journal cites it ("principles recorded in docs/lessons_learned.md §13–16")
+  and keeps only the *narrative* — what happened and in what order. Two prose
+  copies of the same decision will drift.
+- **D-numbers are project-lifetime and never reused.** Next number = highest
+  D-number ever used + 1 — resolved decisions leave TODO.md, so check the
+  journal (`grep -o 'D[0-9]*' SESSIONS.md sessions/* | sort -u`) before
+  numbering a new one.
+- Keep TODO.md under ~100 lines; the narrative lives in SESSIONS.md. **If it
+  exceeds that, the overflow is usually concrete work masquerading as state** —
+  move the work out (see "What qualifies" above) rather than compressing the
+  prose. Compression buys a handful of lines; moving three tasks out buys
+  thirty, and leaves what remains readable.
 
 ## Templates (for initializing a project)
 
@@ -193,6 +222,12 @@ untracked:**
   the commit.
 - Commit with the message `Handoff: <session title>` — the same title as the
   new SESSIONS.md entry.
+- **If the user wants substantive changes committed too, commit those
+  SEPARATELY and FIRST**, then the handoff on top. The handoff commit stays a
+  docs-only commit whatever else is in the tree: a commit titled `Handoff: …`
+  that also carries a new module is one nobody expects to find code in. This is
+  the same "don't sweep unrelated changes" rule, applied to the case where the
+  sweeping was *requested* rather than accidental.
 - **Do not push.** Pushing stays a manual step.
 - If the project isn't a git repository, skip this silently.
 

@@ -6,6 +6,68 @@ done, what was decided and why. History only; for what to do next see
 
 ---
 
+## 2026-08-24 (what qualifies as an open decision)
+
+Written from a `retrieval-lab` session rather than a baton one — the work
+happened there, and `/baton:handoff` targets the session's own project, so this
+entry was composed by hand against the same convention. Worth noting as a small
+gap: the skill has no way to hand off *another* repo, and the narrative always
+lives in the session where the work happened.
+
+**Four edits had been live-but-uncommitted since 2026-07-18.** `skills/handoff/
+SKILL.md` had a dirty working tree five weeks old: the project-level-CLAUDE.md
+clarification, the trivially-safe-hygiene-fixes bullet, don't-duplicate-the-
+project's-knowledge-files, and D-numbers-are-project-lifetime. Because
+`~/.claude/skills/baton` symlinks into this working tree, **the uncommitted
+version is the version that runs** — all four had been shaping every handoff in
+every project for five weeks, and a `git checkout` would have silently reverted
+behaviour nobody would have known to look for. Committed as `bb5f0cd`, no
+behaviour change on merge since they were already what ran. The irony is on the
+nose: `TODO.md` said "working tree clean" as of 2026-07-17, and item 1 of its
+own "Pick up here" is a bug about skills that write files but never commit them.
+
+**The actual change: the skill never said what qualifies as an open decision.**
+It described the *shape* — question, options with trade-offs, recommendation,
+blocked-on, if-A/if-B — but not the admission criterion. So the section collects
+tasks, and `TODO.md` grows without anyone doing anything wrong. The evidence
+came from `retrieval-lab` the day before (see its SESSIONS.md 2026-08-23): five
+"open decisions", four of which had costed options, a recommendation *and* a
+definition of done. One was literally "bake off 3–5 candidates and read the
+numbers" — a task in a decision's clothing. That file had reached 141 lines
+against the ~100 budget, and two rounds of prose-compression bought 5 lines
+while moving three decisions out to GitHub issues bought 34.
+
+Three additions, shipped as `c1f2a4b` via **PR #1** (baton's first, and the
+first exercise of the branch/PR convention adopted in `retrieval-lab` the same
+day):
+
+1. **What qualifies** — a question whose answer changes what gets built and
+   that cannot be settled yet. With a definition of done it is *work*: put it
+   where the project tracks work and leave a pointer. Kept deliberately
+   **tracker-agnostic** — the originating project solved this with GitHub
+   issues, but baton runs on projects with no tracker at all, so encoding "file
+   an issue" would make the rule wrong there. Plus: omit the section entirely
+   when nothing is unsettled, since an empty heading invites the next handoff
+   to refill it.
+2. **The length budget gained a diagnostic** rather than staying a bare limit —
+   overflow is usually concrete work masquerading as state, so move the work
+   out instead of compressing the prose. A limit tells you that you failed; a
+   diagnostic tells you what to do about it.
+3. **Substantive changes commit separately and first**, handoff on top, so a
+   commit titled `Handoff: …` never carries a new module. This one came from
+   breaking the existing rule: asked to commit "everything", that session
+   produced a `Handoff:` commit with 1,247 insertions of code, tests and data
+   in it. The skill forbids *sweeping* unrelated changes but had no answer for
+   the case where the sweeping is **requested** — the answer is two commits.
+
+**What this session says about the skill's blind spots.** Every one of the three
+additions came from watching a handoff strain, not from reasoning about the
+design. That argues for dogfooding on projects with real bookkeeping pressure
+over polishing the text in the abstract — and specifically for noticing when a
+section *grows* rather than only when it is wrong.
+
+---
+
 ## 2026-07-17 (decide skill: honor a project's own notes convention)
 
 Short review-and-ship session. Betty had hand-edited `skills/decide/SKILL.md`

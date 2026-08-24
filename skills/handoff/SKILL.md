@@ -86,6 +86,16 @@ delete old entries.
   ("If A: … / If B: …, including what gets reverted"). Number decisions
   sequentially for the life of the project (D1, D2, …). Write them so the
   user can paste the section into a message to their team.
+  - **What qualifies.** An open decision is a question whose answer changes
+    what gets built and that **cannot be settled yet** — missing evidence, or
+    someone else's call. If it already has costed options, a recommendation and
+    a definition of done, it is **work**, not a decision: put it wherever the
+    project tracks work (issue tracker, backlog, task list) and leave a pointer.
+    A decisions section that collects tasks is the most common reason TODO.md
+    outgrows its length budget, and TODO.md is injected whole at every session
+    start.
+  - Omit the section entirely when nothing is genuinely unsettled — an empty
+    heading invites the next handoff to refill it.
 - **Needs attention:** flags for the repo owner surfaced by the sweep above.
   Omit the section entirely when there's nothing to flag.
 - **Pick up here:** the next 2–3 concrete actions. Not a backlog.
@@ -110,7 +120,11 @@ delete old entries.
   D-number ever used + 1 — resolved decisions leave TODO.md, so check the
   journal (`grep -o 'D[0-9]*' SESSIONS.md sessions/* | sort -u`) before
   numbering a new one.
-- Keep TODO.md under ~100 lines; the narrative lives in SESSIONS.md.
+- Keep TODO.md under ~100 lines; the narrative lives in SESSIONS.md. **If it
+  exceeds that, the overflow is usually concrete work masquerading as state** —
+  move the work out (see "What qualifies" above) rather than compressing the
+  prose. Compression buys a handful of lines; moving three tasks out buys
+  thirty, and leaves what remains readable.
 
 ## Templates (for initializing a project)
 
@@ -208,6 +222,12 @@ untracked:**
   the commit.
 - Commit with the message `Handoff: <session title>` — the same title as the
   new SESSIONS.md entry.
+- **If the user wants substantive changes committed too, commit those
+  SEPARATELY and FIRST**, then the handoff on top. The handoff commit stays a
+  docs-only commit whatever else is in the tree: a commit titled `Handoff: …`
+  that also carries a new module is one nobody expects to find code in. This is
+  the same "don't sweep unrelated changes" rule, applied to the case where the
+  sweeping was *requested* rather than accidental.
 - **Do not push.** Pushing stays a manual step.
 - If the project isn't a git repository, skip this silently.
 

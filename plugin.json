@@ -1,0 +1,39 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "baton",
+  "version": "0.2.0",
+  "description": "Decision-aware session handoffs for coding agents.",
+  "author": {
+    "name": "Betty Wu",
+    "url": "https://github.com/JiamanBettyWu"
+  },
+  "homepage": "https://github.com/JiamanBettyWu/baton",
+  "repository": "https://github.com/JiamanBettyWu/baton",
+  "license": "MIT",
+  "keywords": [
+    "handoff",
+    "decisions",
+    "session-continuity"
+  ],
+  "extensions": {
+    "com.openai": {
+      "hooks": "./hooks/hooks.json",
+      "interface": {
+        "displayName": "baton",
+        "shortDescription": "Decision-aware session handoffs",
+        "longDescription": "Preserve current state, open decisions, and reasoning across coding-agent sessions.",
+        "developerName": "Betty Wu",
+        "category": "Productivity",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "websiteURL": "https://github.com/JiamanBettyWu/baton",
+        "defaultPrompt": [
+          "Create a decision-aware handoff for this session.",
+          "Record the outcome of an open project decision."
+        ]
+      }
+    }
+  }
+}

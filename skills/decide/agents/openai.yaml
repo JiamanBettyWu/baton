@@ -1,0 +1,7 @@
+interface:
+  display_name: "Decide"
+  short_description: "Record and commit an open decision outcome"
+  default_prompt: "Record the outcome of an open project decision."
+
+policy:
+  allow_implicit_invocation: false

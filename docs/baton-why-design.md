@@ -1,4 +1,4 @@
-# `/baton:why` — lazy decision archaeology (design, not yet built)
+# why skill — lazy decision archaeology (design, not yet built)
 
 Parked design, extracted from TODO.md's Scratch section on 2026-07-15 (first
 firing of the oversized-Scratch sweep rule). Evolved 2026-07-13 from the
@@ -18,7 +18,7 @@ NOT a batch pass over all commits (rung-3 trap) — a skill that answers one
 "why" question by running the archaeology ritual (`git log -L`, `git log -S`
 pickaxe, `gh pr view`), then **persists the finding** to a `BECAUSE.md` (named
 for the why→because pairing; *not* `DECISIONS.md`, which reads like
-`/baton:decide` output — it isn't): question, answer, evidence trail
+decide-skill output — it isn't): question, answer, evidence trail
 (SHAs/PR links), confidence.
 
 A query cache for institutional knowledge — the index grows exactly where

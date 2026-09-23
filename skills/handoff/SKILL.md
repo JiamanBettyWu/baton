@@ -1,20 +1,22 @@
 ---
-description: End-of-session handoff — sweep the session for loose ends and stale docs, append a dated journal entry to SESSIONS.md, refresh TODO.md's current state, open decisions, attention flags, and next steps, then commit both. Archives the journal when it grows past ~500 lines. Initializes both files (with an explicit entry format) in projects that have none. Use at the end of a work session or before pausing for team alignment.
-disable-model-invocation: true
+name: handoff
+description: Create a decision-aware end-of-session handoff when the user explicitly asks to pause or hand off work. Sweep loose ends, update the project's current-state and journal files, and commit only the handoff records.
 ---
 
 # Handoff
 
-If the user provided extra context, weave it in: $ARGUMENTS
+Run this workflow only when the user explicitly requests a handoff. Weave any
+extra context or notes from the user's request into the record.
 
 ## Where to write
 
-1. If the project documents its own session-notes convention (check the
-   **project-level** CLAUDE.md / AGENTS.md for rules about session logs,
-   current-state pointers, or post-session sweeps), **follow that convention
-   exactly** — same files, same format, same length rules. The user's global
-   `~/.claude/CLAUDE.md` does not set a per-project convention; it only
-   counts if it explicitly states one that applies to all projects.
+1. If the project documents its own session-notes convention, check the active
+   project instruction files (for example, `AGENTS.md` and `CLAUDE.md`) for
+   rules about session logs, current-state pointers, or post-session sweeps.
+   **Follow that convention exactly** — same files, same format, same length
+   rules. If multiple active files define conflicting conventions, ask which
+   one is canonical instead of combining them. User-level instructions count
+   only when they explicitly define a convention for all projects.
 2. Otherwise, use the default convention: **`TODO.md`** (forward-looking,
    kept current) and **`SESSIONS.md`** (append-only dated journal), both at
    the project root.

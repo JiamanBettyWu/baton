@@ -1,77 +1,98 @@
 # baton 🏃‍♀️
 
-Decision-aware session handoffs for Claude Code.
+Decision-aware session handoffs for coding agents, with first-class support
+for Claude Code and Codex.
 
 Session-summary tools remember *what happened*. `baton` is built for a
-different pause: **work stopped because a decision left the room** — you're
-waiting on team alignment, and when you come back, what matters is which
-option was chosen and which parts of the plan that invalidates.
+different pause: **work stopped because a decision left the room**. When work
+resumes, the important context is which option was chosen and which parts of
+the plan that invalidates.
 
-`baton` maintains two plain-markdown files per project, at the repo root:
+`baton` maintains two plain-Markdown files at the project root:
 
-- **`TODO.md`** — forward-looking state, refreshed each handoff: a ~3-sentence
-  current-state pointer, **open decisions** (options, trade-offs,
-  recommendation, outcome-dependent next steps), and the next 2–3 actions.
+- **`TODO.md`** — forward-looking state, refreshed at each handoff: a short
+  current-state pointer, open decisions with options and trade-offs, and the
+  next 2–3 actions.
 - **`SESSIONS.md`** — an append-only dated journal: one narrative entry per
-  session, decisions recorded *with their reasoning*. History never gets
-  rewritten — it's greppable when work resumes a thread from weeks ago, and
-  it's blog-post source material.
+  session, with decisions recorded alongside their reasoning.
 
-A SessionStart hook injects `TODO.md` (plus a pointer to the latest journal
-entry) at the start of every session, so Claude is already caught up before
-your first prompt.
+A `SessionStart` hook injects `TODO.md` plus the latest journal entry's title
+when a session starts or resumes. The hook activates only when both files
+exist, so a project with an unrelated `TODO.md` is unaffected.
 
 ## Skills
 
-| Skill | When | What it does |
-| --- | --- | --- |
-| `/baton:handoff [notes]` | End of a session, or before pausing for alignment | Sweeps the session for loose ends and stale docs, appends a dated journal entry to `SESSIONS.md`, refreshes `TODO.md`, and commits both (never pushes); initializes both files in a fresh project; archives the journal once it passes ~500 lines; prints open decisions ready to paste to your team |
-| `/baton:decide <outcome>` | The team decided | Logs the decision + reasoning to the journal, promotes the matching "if" branch of the plan in `TODO.md`, flags work the outcome invalidated |
+| Workflow | Claude Code | Codex | What it does |
+| --- | --- | --- | --- |
+| Handoff | `/baton:handoff [notes]` | `$handoff` with optional notes | Sweeps for loose ends and stale docs, appends to `SESSIONS.md`, refreshes `TODO.md`, and creates a scoped commit that never pushes |
+| Decide | `/baton:decide <outcome>` | `$decide` with the outcome | Logs a decision and its reasoning, promotes the matching branch of the plan, flags invalidated work, and creates a scoped records-only commit |
 
-The hook (on startup, resume, and `/clear`) activates only when **both** files
-exist, so repos with an unrelated `TODO.md` are unaffected.
+Both workflows are explicit-only. They do not run unless the user invokes the
+skill or directly asks for that action.
 
 ## Install
 
-**Personal (auto-loading, no marketplace needed):**
+### Claude Code
 
 ```bash
-git clone https://github.com/<you>/baton ~/.claude/skills/baton
+claude plugin marketplace add JiamanBettyWu/baton
+claude plugin install baton@baton
 ```
 
-Plugins placed in `~/.claude/skills/` load automatically in every session
-(as `baton@skills-dir`). To develop against a working copy elsewhere instead:
+For development against a working copy:
 
 ```bash
 claude --plugin-dir ~/dev/baton
 ```
 
-**Via a marketplace** (team/company): add this repo to the marketplace's
-`marketplace.json`, then `/plugin install baton@<marketplace>`.
+### Codex
 
-**Locked-down environment (plugins/hooks disabled):** the skills degrade
-gracefully to plain project skills — copy `skills/handoff` and `skills/decide`
-into the repo's `.claude/skills/` (they become `/handoff` and `/decide`).
-Without the hook, start sessions with "read TODO.md", or add the
-`SessionStart` block from `hooks/hooks.json` to `.claude/settings.json` with
-the script path adjusted, if hooks are permitted.
+```bash
+codex plugin marketplace add JiamanBettyWu/baton
+codex plugin add baton@baton
+```
+
+Start a new task after installation so Codex loads the skills and hook. Codex
+does not automatically trust plugin-bundled hooks: open `/hooks`, review the
+baton `SessionStart` hook, and trust it before expecting automatic context
+injection.
+
+For local development, replace `JiamanBettyWu/baton` with the absolute path to
+a clean checkout or export when adding the marketplace, then reinstall the
+plugin and start a new task after changes. Local-path installation copies that
+directory, including ignored files, so do not point it at a working copy that
+contains private local configuration.
 
 ## Projects with their own conventions
 
-If a project already documents a session-notes workflow in CLAUDE.md /
-AGENTS.md, both skills **defer to it** — same files, same format, same rules —
-rather than imposing the default templates. The hook works unchanged wherever
-the project keeps `TODO.md` + `SESSIONS.md` at the root.
+If a project documents a session-notes workflow in an active instruction file
+such as `AGENTS.md` or `CLAUDE.md`, both skills follow that convention instead
+of imposing baton's default templates. If active instruction files conflict,
+the skill asks which convention is canonical rather than merging them.
+
+## Hooks disabled or unavailable
+
+The skills still work without lifecycle hooks. Install `skills/handoff` and
+`skills/decide` in the host's project skill directory (`.claude/skills/` for
+Claude Code or `.agents/skills/` for Codex), and begin a session by asking the
+agent to read `TODO.md`. This is also the fallback for locked-down environments
+that prohibit plugins or untrusted hooks.
+
+Other agents may load the shared skill directories manually when they support
+the Agent Skills format, but this release provides first-class packaging only
+for Claude Code and Codex.
+
+If Codex discovers the skills but `/hooks` shows no baton hook, update to a
+Codex build that supports portable plugin hooks or use the manual fallback
+above.
 
 ## Notes
 
-The files are ordinary markdown — human-readable, human-editable, reviewable
-in git. `/baton:handoff` commits them for you — scoped to just these files,
-never pushed — so the context travels with the repo and teammates on Claude
-Code pick it up for free. `TODO.md` is current-state only (resolved decisions
-move to the journal); `SESSIONS.md` is append-only. The failure mode of every handoff
-system is the state file going stale — if you keep forgetting to run
-`/baton:handoff`, wire a SessionEnd reminder hook.
+The state files are human-readable, human-editable, and reviewable in Git.
+Both skills stage only the records they created or updated and never push.
+`TODO.md` stays current-state only; resolved decisions move to the append-only
+journal. If handoffs are frequently missed, add a host-supported end-of-session
+reminder rather than duplicating the workflow.
 
 ## License
 

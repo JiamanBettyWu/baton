@@ -6,6 +6,43 @@ done, what was decided and why. History only; for what to do next see
 
 ---
 
+## 2026-09-22 (baton 0.2: agent-agnostic Claude Code and Codex)
+
+Converted baton from a Claude-native plugin into one portable implementation
+with thin discovery adapters. The new root `plugin.json` is the canonical
+Agent Plugins manifest at version 0.2.0; `.claude-plugin/` and `.agents/`
+contain only host-facing manifests and catalogs. `AGENTS.md` now owns
+contributor guidance, while `CLAUDE.md` imports it instead of maintaining a
+second editable copy. The actual workflow remains in `skills/` and `hooks/`.
+
+Both skills now carry required `name` metadata, consume context from the
+user's request rather than `$ARGUMENTS`, and run only after an explicit user
+request. They honor a project's own session convention, but ask when active
+`AGENTS.md` and `CLAUDE.md` rules conflict instead of silently merging them.
+The decide workflow gained the same durability boundary as handoff: it stages
+only the record files it changed, creates a records-only commit, and never
+pushes.
+
+The shared SessionStart hook now resolves its executable through `PLUGIN_ROOT`
+with `CLAUDE_PLUGIN_ROOT` as a compatibility fallback. It resolves the project
+from `CLAUDE_PROJECT_DIR`, then the Git root, then the current directory, and
+its plain-text suggestions use neutral skill names. Repeatable shell fixtures
+cover both files, journal-only, TODO-only, neither file, nested directories,
+latest-heading extraction, and exclusion of the journal body. Package JSON,
+both skill frontmatters, shell syntax, and the Claude manifests were validated;
+a Claude debug load discovered both skills and injected the expected startup
+context.
+
+Codex `0.154.0-alpha.6.2` discovered both skills in a clean staged package but
+reported no bundled hook even though the root extension matches the current
+documented schema. The hook itself is covered by host-neutral fixture tests,
+and the README documents trust plus the manual fallback. Betty explicitly
+scoped live marketplace verification out of this migration, so the older local
+runtime mismatch is recorded for a future Codex update rather than worked
+around with a duplicate hook body.
+
+---
+
 ## 2026-08-24 (what qualifies as an open decision)
 
 Written from a `retrieval-lab` session rather than a baton one — the work

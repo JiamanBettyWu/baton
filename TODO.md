@@ -4,15 +4,12 @@ Forward-looking state. Session history lives in [SESSIONS.md](SESSIONS.md).
 
 ## Current state
 
-**As of 2026-08-24 (latest session):** shipped **PR #1** (`2cb8f90`) — the
-handoff skill now says *what qualifies* as an open decision (a question that
-cannot be settled yet; anything with a definition of done is work and belongs
-where the project tracks work), the ~100-line budget gained a diagnostic, and
-substantive changes now commit separately from the handoff. Also committed four
-refinements that had been **live but uncommitted since 2026-07-18** — the
-symlink means the working tree is the runtime, so they had been running for five
-weeks (`bb5f0cd`). Working tree clean, `main` pushed. Detail in
-[SESSIONS.md](SESSIONS.md).
+**As of 2026-09-22 (latest session):** baton has one portable implementation
+for Claude Code and Codex on branch `agent-agnostic-baton`: root Agent Plugins
+metadata, thin host catalogs, shared explicit-only skills, a host-neutral
+startup hook, and canonical contributor guidance. The persistence contract is
+unchanged, and both write workflows now create scoped records-only commits
+without pushing. Detail in [SESSIONS.md](SESSIONS.md).
 
 ## Open decisions
 
@@ -28,23 +25,27 @@ weeks (`bb5f0cd`). Working tree clean, `main` pushed. Detail in
   happened there and the narrative only exists where the session was. Not
   obviously worth fixing — cross-repo targeting is a real complication for a
   rare case — but it is a known edge, not an oversight.
+- ⚠️ **Recheck automatic hook discovery after the local Codex runtime is
+  updated.** Codex `0.154.0-alpha.6.2` discovered both packaged skills but
+  showed no plugin hook for the current documented root-manifest extension.
+  The shared hook itself passes its fixture tests, and the README documents
+  the disabled-hook fallback; live marketplace verification is not a release
+  blocker for this source migration.
 
 ## Scratch — not yet promoted
 
-- **`/baton:why` — lazy decision archaeology:** answer one "why" question via
+- **why skill — lazy decision archaeology:** answer one "why" question via
   git archaeology, persist the finding to `BECAUSE.md`. Full design in
   [docs/baton-why-design.md](docs/baton-why-design.md).
 
 ## Pick up here
 
-1. Mirror the auto-commit step into `/baton:decide` (it writes SESSIONS.md +
-   TODO.md but never commits them — same gap handoff closed on 2026-07-15).
-   **Now evidenced:** this repo just found four of its own edits uncommitted and
-   live for five weeks. A skill that writes files it does not commit produces
-   exactly that, and the symlink makes it invisible — nothing looks broken.
-2. Dogfood in mise: end the next mise session with `/baton:handoff` and
-   judge the SESSIONS.md entry against Betty's own entries — the convention
-   it was modeled on is the strictest test of format fidelity.
+1. Dogfood in mise: end one Claude Code session with `/baton:handoff` and one
+   Codex session with `$handoff`; compare the resulting files and scoped
+   commits. Betty's own entries are the strictest test of format fidelity.
+2. After updating Codex, review and trust the baton hook in `/hooks`, then
+   confirm a new task receives all of `TODO.md` and only the latest
+   `SESSIONS.md` heading.
 
 **Later —** work port (repo public as of 2026-07-13, so plain clone works):
 clone on the work laptop, check the company's plugin policy, test — falling

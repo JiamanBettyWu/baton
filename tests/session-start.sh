@@ -62,7 +62,7 @@ assert_contains "$OUTPUT" '2026-09-22 (latest fixture)'
 assert_not_contains "$OUTPUT" 'LATEST-JOURNAL-BODY'
 
 # The shared hook command also works with Claude's plugin-root variable alone.
-OUTPUT=$(cd "$CLAUDE_FIXTURE" && env -u PLUGIN_ROOT \
+OUTPUT=$(cd "$CLAUDE_FIXTURE" && env -u PLUGIN_ROOT -u CLAUDE_PROJECT_DIR \
   CLAUDE_PLUGIN_ROOT="$REPO_ROOT" \
   sh -c '"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT}}/hooks/session-start.sh"')
 assert_contains "$OUTPUT" 'TODO-SENTINEL'

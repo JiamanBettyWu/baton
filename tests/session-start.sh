@@ -80,6 +80,21 @@ OUTPUT=$(cd "$CLAUDE_FIXTURE" && env -u PLUGIN_ROOT -u CLAUDE_PROJECT_DIR \
   sh -c '"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT}}/hooks/session-start.sh"')
 assert_contains "$OUTPUT" 'TODO-SENTINEL'
 
+# PLUGIN_ROOT wins when both host root variables are present.
+OUTPUT=$(cd "$CLAUDE_FIXTURE" && env -u CLAUDE_PROJECT_DIR \
+  PLUGIN_ROOT="$REPO_ROOT" \
+  CLAUDE_PLUGIN_ROOT="$TMP_ROOT/not-the-plugin" \
+  sh -c '"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT}}/hooks/session-start.sh"')
+assert_contains "$OUTPUT" 'TODO-SENTINEL'
+
+# Without a host project variable or Git repository, use the current folder.
+NO_GIT="$TMP_ROOT/no-git-project"
+write_todo "$NO_GIT" 'NO-GIT-TODO-SENTINEL'
+write_sessions "$NO_GIT"
+OUTPUT=$(cd "$NO_GIT" && env -u CLAUDE_PROJECT_DIR "$HOOK")
+assert_contains "$OUTPUT" 'NO-GIT-TODO-SENTINEL'
+assert_contains "$OUTPUT" '2026-09-22 (latest fixture)'
+
 # A journal without TODO.md surfaces the recovery guidance.
 JOURNAL_ONLY="$TMP_ROOT/journal-only"
 write_sessions "$JOURNAL_ONLY"

@@ -121,8 +121,10 @@ delete old entries.
   copies of the same decision will drift.
 - **D-numbers are project-lifetime and never reused.** Next number = highest
   D-number ever used + 1 — resolved decisions leave TODO.md, so check the
-  journal (`grep -o 'D[0-9]*' SESSIONS.md sessions/* | sort -u`) before
-  numbering a new one.
+  journal
+  (`find . -maxdepth 2 -type f \( -path './SESSIONS.md' -o -path './sessions/*.md' \) -exec grep -hEo 'D[0-9]+' {} + | sort -u`)
+  before numbering a new one. This avoids unmatched shell globs when no
+  archive directory exists and requires at least one digit after `D`.
 - Keep TODO.md under ~100 lines; the narrative lives in SESSIONS.md. **If it
   exceeds that, the overflow is usually concrete work masquerading as state** —
   move the work out (see "What qualifies" above) rather than compressing the

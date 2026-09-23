@@ -20,6 +20,11 @@ only for discovery, installation, or invocation policy.
   host-specific home directories, or one host's invocation syntax.
 - Host-specific invocation policy belongs in host metadata, such as
   `skills/*/agents/openai.yaml` for Codex.
+- Keep `disable-model-invocation: true` in both shared skill frontmatters.
+  Claude Code recommends this guard for workflows with side effects. The
+  current Agent Skills validator reports the Claude extension as an unknown
+  top-level key; that expected portability diagnostic must not be "fixed" by
+  weakening explicit-only behavior.
 - Hook commands must prefer `PLUGIN_ROOT` and fall back to
   `CLAUDE_PLUGIN_ROOT`. Project discovery must work without either host's
   project-directory variable.
@@ -40,5 +45,7 @@ claude plugin validate .claude-plugin/marketplace.json --strict
 The first Claude command currently reports one expected repository-level
 warning because `CLAUDE.md` imports contributor guidance and is not a plugin
 component; treat any additional warning or any error as a failure. Also
-validate both skills with the bundled skill validator and test a fresh
-installation in both supported hosts when packaging or discovery changes.
+run the bundled skill validator to catch other defects, while accounting for
+its expected rejection of Claude's `disable-model-invocation` extension. Test
+a fresh installation in both supported hosts when packaging or discovery
+changes.

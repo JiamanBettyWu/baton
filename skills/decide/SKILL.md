@@ -1,6 +1,7 @@
 ---
 name: decide
 description: Record and reconcile an open project decision when the user explicitly reports its outcome. Preserve the reasoning, update current next steps, and flag invalidated work.
+disable-model-invocation: true
 ---
 
 # Decide

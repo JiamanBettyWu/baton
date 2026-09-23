@@ -1,6 +1,7 @@
 ---
 name: handoff
 description: Create a decision-aware end-of-session handoff when the user explicitly asks to pause or hand off work. Sweep loose ends, update the project's current-state and journal files, and commit only the handoff records.
+disable-model-invocation: true
 ---
 
 # Handoff

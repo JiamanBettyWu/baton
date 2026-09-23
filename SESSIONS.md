@@ -6,6 +6,19 @@ done, what was decided and why. History only; for what to do next see
 
 ---
 
+## 2026-09-22 (restore Claude's explicit-invocation guard)
+
+Restored `disable-model-invocation: true` to both mutating skills after review
+of the first agent-agnostic PR. The portable Agent Skills validator rejects
+that Claude-specific top-level key, but instruction text alone is not an
+equivalent safety boundary: without the flag Claude may select a write-and-
+commit workflow automatically. Claude now enforces user-only invocation in
+the shared frontmatter, while Codex continues to enforce the same policy with
+`allow_implicit_invocation: false` in each `agents/openai.yaml`. Source-install
+safety takes precedence over public-submission validation for this release.
+
+---
+
 ## 2026-09-22 (baton 0.2: agent-agnostic Claude Code and Codex)
 
 Converted baton from a Claude-native plugin into one portable implementation

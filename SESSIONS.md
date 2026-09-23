@@ -6,6 +6,41 @@ done, what was decided and why. History only; for what to do next see
 
 ---
 
+## 2026-09-22 (baton 0.2 merged and installed for Codex)
+
+Completed the agent-agnostic migration and merged PR #2 as `92df370`. Baton
+0.2 now has one editable workflow implementation in `skills/` and `hooks/`,
+with a canonical root plugin manifest, thin Claude Code and Codex discovery
+adapters, `AGENTS.md` as the shared contributor guide, and `CLAUDE.md` as an
+import-only compatibility file. The existing `TODO.md`/`SESSIONS.md`
+persistence contract and Claude command names remain intact.
+
+Review tightened the boundaries that matter for a mutating workflow. Claude's
+`disable-model-invocation: true` guard was restored even though the portable
+skill validator does not accept that host-specific key; Codex carries the
+equivalent `allow_implicit_invocation: false` setting. Both `decide` and
+`handoff` now commit with `git commit --only` and explicit record pathspecs,
+so unrelated files that were already staged cannot leak into a records-only
+commit. Regression coverage exercises that case for both existing and newly
+created record files.
+
+The shared startup hook and its fixtures were hardened during review. Codex
+prefers an initialized baton project in the current directory before falling
+back to the Git root, inherited Claude project variables are cleared where a
+fixture is meant to exercise another path, and the suite covers no-Git and
+both-root-variable cases. Tests now read the hook command from
+`hooks/hooks.json` instead of duplicating it, manifest versions must match,
+the D-number scan is safe when `sessions/` is absent, and the README warns
+users to remove the legacy `~/.claude/skills/baton` symlink before installing.
+
+After the merge, `main` was fast-forwarded and the shell, commit-scope,
+package-metadata, and syntax suites all passed. The standalone Codex CLI is
+now `0.156.1`, and its local catalog reports `baton@baton` version 0.2.0 as
+installed and enabled. This handoff was run manually because the already-open
+task predates that installation. A fresh task still needs to prove live skill
+discovery and trusted SessionStart injection; no workaround or duplicate hook
+body was added for the older app-bundled runtime.
+
 ## 2026-09-22 (PR review: discovery and packaging regressions)
 
 Hardened three migration edges found in review. Without

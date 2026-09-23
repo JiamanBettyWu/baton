@@ -4,33 +4,25 @@ Forward-looking state. Session history lives in [SESSIONS.md](SESSIONS.md).
 
 ## Current state
 
-**As of 2026-09-22 (latest session):** baton has one portable implementation
-for Claude Code and Codex on branch `agent-agnostic-baton`: root Agent Plugins
-metadata, thin host catalogs, shared explicit-only skills, a host-neutral
-startup hook, and canonical contributor guidance. The persistence contract is
-unchanged, and both write workflows now create scoped records-only commits
-without pushing. Detail in [SESSIONS.md](SESSIONS.md).
-
-## Open decisions
-
-(none — nothing currently blocked on an outside call)
+**As of 2026-09-22 (latest session):** baton 0.2's agent-agnostic migration
+shipped through PR #2 (`92df370`), and `main` is clean. The standalone Codex
+CLI now has `baton@baton` 0.2.0 installed and enabled; live startup-hook
+verification in a fresh task remains. Detail in [SESSIONS.md](SESSIONS.md).
 
 ## Needs attention
 
 - ⚠️ **Rotation is unexercised** — the ~500-line archive path has never run
-  against a real oversized journal; watch the first real rotation. (`baton`'s
-  own journal is at 263 lines; `retrieval-lab`'s is at 449 and will trip first.)
+  against a real oversized journal; `SESSIONS.md` was 338 lines before this
+  entry, so watch its first real rotation.
 - ⚠️ **The skill cannot hand off a repo other than the session's own.** This
   entry was written by hand from a `retrieval-lab` session, because the work
   happened there and the narrative only exists where the session was. Not
   obviously worth fixing — cross-repo targeting is a real complication for a
   rare case — but it is a known edge, not an oversight.
-- ⚠️ **Recheck automatic hook discovery after the local Codex runtime is
-  updated.** Codex `0.154.0-alpha.6.2` discovered both packaged skills but
-  showed no plugin hook for the current documented root-manifest extension.
-  The shared hook itself passes its fixture tests, and the README documents
-  the disabled-hook fallback; live marketplace verification is not a release
-  blocker for this source migration.
+- ⚠️ **Live Codex hook verification remains.** The standalone CLI is now
+  `0.156.1` and the plugin is installed and enabled, but this already-running
+  task cannot prove that a new task discovers the skills and injects startup
+  context after hook review and trust.
 
 ## Scratch — not yet promoted
 
@@ -40,12 +32,12 @@ without pushing. Detail in [SESSIONS.md](SESSIONS.md).
 
 ## Pick up here
 
-1. Dogfood in mise: end one Claude Code session with `/baton:handoff` and one
-   Codex session with `$handoff`; compare the resulting files and scoped
-   commits. Betty's own entries are the strictest test of format fidelity.
-2. After updating Codex, review and trust the baton hook in `/hooks`, then
-   confirm a new task receives all of `TODO.md` and only the latest
-   `SESSIONS.md` heading.
+1. Start a fresh Codex task in this repo, confirm `$handoff` and `$decide` are
+   discoverable, then review and trust baton's SessionStart hook in `/hooks`.
+2. Confirm startup injects all of `TODO.md` plus only the latest
+   `SESSIONS.md` heading, not the full journal.
+3. Dogfood in mise: compare one Claude Code `/baton:handoff` with one Codex
+   `$handoff`, including file output, scoped commit contents, and no push.
 
 **Later —** work port (repo public as of 2026-07-13, so plain clone works):
 clone on the work laptop, check the company's plugin policy, test — falling

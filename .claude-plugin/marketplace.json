@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "baton",
+  "description": "Decision-aware session handoffs for coding agents.",
+  "owner": {
+    "name": "Betty Wu"
+  },
+  "plugins": [
+    {
+      "name": "baton",
+      "description": "Decision-aware session handoffs for coding agents.",
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://github.com/JiamanBettyWu/baton"
+    }
+  ]
+}

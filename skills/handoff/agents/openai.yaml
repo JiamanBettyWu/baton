@@ -1,0 +1,7 @@
+interface:
+  display_name: "Handoff"
+  short_description: "Create and commit a decision-aware session handoff"
+  default_prompt: "Create a decision-aware handoff for this session."
+
+policy:
+  allow_implicit_invocation: false

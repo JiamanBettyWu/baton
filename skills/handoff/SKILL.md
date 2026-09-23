@@ -1,20 +1,23 @@
 ---
-description: End-of-session handoff — sweep the session for loose ends and stale docs, append a dated journal entry to SESSIONS.md, refresh TODO.md's current state, open decisions, attention flags, and next steps, then commit both. Archives the journal when it grows past ~500 lines. Initializes both files (with an explicit entry format) in projects that have none. Use at the end of a work session or before pausing for team alignment.
+name: handoff
+description: Create a decision-aware end-of-session handoff when the user explicitly asks to pause or hand off work. Sweep loose ends, update the project's current-state and journal files, and commit only the handoff records.
 disable-model-invocation: true
 ---
 
 # Handoff
 
-If the user provided extra context, weave it in: $ARGUMENTS
+Run this workflow only when the user explicitly requests a handoff. Weave any
+extra context or notes from the user's request into the record.
 
 ## Where to write
 
-1. If the project documents its own session-notes convention (check the
-   **project-level** CLAUDE.md / AGENTS.md for rules about session logs,
-   current-state pointers, or post-session sweeps), **follow that convention
-   exactly** — same files, same format, same length rules. The user's global
-   `~/.claude/CLAUDE.md` does not set a per-project convention; it only
-   counts if it explicitly states one that applies to all projects.
+1. If the project documents its own session-notes convention, check the active
+   project instruction files (for example, `AGENTS.md` and `CLAUDE.md`) for
+   rules about session logs, current-state pointers, or post-session sweeps.
+   **Follow that convention exactly** — same files, same format, same length
+   rules. If multiple active files define conflicting conventions, ask which
+   one is canonical instead of combining them. User-level instructions count
+   only when they explicitly define a convention for all projects.
 2. Otherwise, use the default convention: **`TODO.md`** (forward-looking,
    kept current) and **`SESSIONS.md`** (append-only dated journal), both at
    the project root.
@@ -118,8 +121,10 @@ delete old entries.
   copies of the same decision will drift.
 - **D-numbers are project-lifetime and never reused.** Next number = highest
   D-number ever used + 1 — resolved decisions leave TODO.md, so check the
-  journal (`grep -o 'D[0-9]*' SESSIONS.md sessions/* | sort -u`) before
-  numbering a new one.
+  journal
+  (`find . -maxdepth 2 -type f \( -path './SESSIONS.md' -o -path './sessions/*.md' \) -exec grep -hEo 'D[0-9]+' {} + | sort -u`)
+  before numbering a new one. This avoids unmatched shell globs when no
+  archive directory exists and requires at least one digit after `D`.
 - Keep TODO.md under ~100 lines; the narrative lives in SESSIONS.md. **If it
   exceeds that, the overflow is usually concrete work masquerading as state** —
   move the work out (see "What qualifies" above) rather than compressing the
@@ -220,8 +225,11 @@ untracked:**
 - If you rotated the journal, the `git mv` already staged the rename; also
   `git add` the fresh `SESSIONS.md` so both the archive and the new file land in
   the commit.
-- Commit with the message `Handoff: <session title>` — the same title as the
-  new SESSIONS.md entry.
+- Commit with an explicit pathspec containing every file this handoff wrote:
+  `git commit --only -m "Handoff: <session title>" -- <TODO-path> <journal-path> [<other-written-paths>...]`.
+  The message uses the same title as the new SESSIONS.md entry. `--only`
+  prevents files staged before the handoff from leaking into its commit;
+  never use a plain `git commit` for this workflow.
 - **If the user wants substantive changes committed too, commit those
   SEPARATELY and FIRST**, then the handoff on top. The handoff commit stays a
   docs-only commit whatever else is in the tree: a commit titled `Handoff: …`

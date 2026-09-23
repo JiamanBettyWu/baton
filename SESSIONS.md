@@ -6,6 +6,81 @@ done, what was decided and why. History only; for what to do next see
 
 ---
 
+## 2026-09-22 (PR review: discovery and packaging regressions)
+
+Hardened three migration edges found in review. Without
+`CLAUDE_PROJECT_DIR`, the startup hook now checks the current folder for
+`TODO.md` before falling back to the Git root, so a baton-enabled subproject in
+a monorepo does not silently inherit or miss parent state. The README now tells
+users migrating from the old personal install to remove the
+`~/.claude/skills/baton` symlink before plugin installation, preventing double
+skill and hook loading. A package-metadata test now asserts that the portable
+and Claude compatibility manifests carry the same version.
+
+---
+
+## 2026-09-22 (isolate records-only commits from the existing index)
+
+Fixed a commit-boundary bug found in review: staging only `TODO.md` and
+`SESSIONS.md` does not make a subsequent plain `git commit` records-only,
+because Git also includes anything that was already staged before the skill
+ran. Both handoff and decide now commit with `git commit --only` plus an
+explicit pathspec containing every record the workflow wrote. Unrelated staged
+work remains staged for its own commit. Added a regression fixture covering
+both existing record files and the first-run case where the records are new.
+
+---
+
+## 2026-09-22 (restore Claude's explicit-invocation guard)
+
+Restored `disable-model-invocation: true` to both mutating skills after review
+of the first agent-agnostic PR. The portable Agent Skills validator rejects
+that Claude-specific top-level key, but instruction text alone is not an
+equivalent safety boundary: without the flag Claude may select a write-and-
+commit workflow automatically. Claude now enforces user-only invocation in
+the shared frontmatter, while Codex continues to enforce the same policy with
+`allow_implicit_invocation: false` in each `agents/openai.yaml`. Source-install
+safety takes precedence over public-submission validation for this release.
+
+---
+
+## 2026-09-22 (baton 0.2: agent-agnostic Claude Code and Codex)
+
+Converted baton from a Claude-native plugin into one portable implementation
+with thin discovery adapters. The new root `plugin.json` is the canonical
+Agent Plugins manifest at version 0.2.0; `.claude-plugin/` and `.agents/`
+contain only host-facing manifests and catalogs. `AGENTS.md` now owns
+contributor guidance, while `CLAUDE.md` imports it instead of maintaining a
+second editable copy. The actual workflow remains in `skills/` and `hooks/`.
+
+Both skills now carry required `name` metadata, consume context from the
+user's request rather than `$ARGUMENTS`, and run only after an explicit user
+request. They honor a project's own session convention, but ask when active
+`AGENTS.md` and `CLAUDE.md` rules conflict instead of silently merging them.
+The decide workflow gained the same durability boundary as handoff: it stages
+only the record files it changed, creates a records-only commit, and never
+pushes.
+
+The shared SessionStart hook now resolves its executable through `PLUGIN_ROOT`
+with `CLAUDE_PLUGIN_ROOT` as a compatibility fallback. It resolves the project
+from `CLAUDE_PROJECT_DIR`, then the Git root, then the current directory, and
+its plain-text suggestions use neutral skill names. Repeatable shell fixtures
+cover both files, journal-only, TODO-only, neither file, nested directories,
+latest-heading extraction, and exclusion of the journal body. Package JSON,
+both skill frontmatters, shell syntax, and the Claude manifests were validated;
+a Claude debug load discovered both skills and injected the expected startup
+context.
+
+Codex `0.154.0-alpha.6.2` discovered both skills in a clean staged package but
+reported no bundled hook even though the root extension matches the current
+documented schema. The hook itself is covered by host-neutral fixture tests,
+and the README documents trust plus the manual fallback. Betty explicitly
+scoped live marketplace verification out of this migration, so the older local
+runtime mismatch is recorded for a future Codex update rather than worked
+around with a duplicate hook body.
+
+---
+
 ## 2026-08-24 (what qualifies as an open decision)
 
 Written from a `retrieval-lab` session rather than a baton one — the work

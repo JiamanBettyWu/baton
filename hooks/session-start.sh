@@ -10,7 +10,7 @@ CURRENT_DIR="${PWD:-.}"
 
 if [ -n "${CLAUDE_PROJECT_DIR:-}" ]; then
   DIR="$CLAUDE_PROJECT_DIR"
-elif [ -f "$CURRENT_DIR/TODO.md" ]; then
+elif [ -f "$CURRENT_DIR/SESSIONS.md" ]; then
   # Codex has no project-directory variable. Prefer an initialized baton
   # project in the working directory before considering a parent Git root.
   DIR="$CURRENT_DIR"

@@ -4,6 +4,7 @@ set -eu
 
 REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)
 HOOK="$REPO_ROOT/hooks/session-start.sh"
+HOOK_COMMAND=$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["hooks"]["SessionStart"][0]["hooks"][0]["command"])' "$REPO_ROOT/hooks/hooks.json")
 TMP_ROOT=$(mktemp -d)
 trap 'rm -rf "$TMP_ROOT"' EXIT
 
@@ -55,10 +56,12 @@ write_todo "$CODEX_FIXTURE"
 write_sessions "$CODEX_FIXTURE"
 git -C "$CODEX_FIXTURE" init -q
 mkdir -p "$CODEX_FIXTURE/nested/path"
+write_todo "$CODEX_FIXTURE/nested/path" 'SCRATCH-TODO-SENTINEL'
 OUTPUT=$(cd "$CODEX_FIXTURE/nested/path" && env -u CLAUDE_PROJECT_DIR \
   PLUGIN_ROOT="$REPO_ROOT" \
-  sh -c '"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT}}/hooks/session-start.sh"')
+  sh -c "$HOOK_COMMAND")
 assert_contains "$OUTPUT" 'TODO-SENTINEL'
+assert_not_contains "$OUTPUT" 'SCRATCH-TODO-SENTINEL'
 assert_contains "$OUTPUT" '2026-09-22 (latest fixture)'
 assert_not_contains "$OUTPUT" 'LATEST-JOURNAL-BODY'
 
@@ -77,14 +80,14 @@ assert_not_contains "$OUTPUT" 'ROOT-TODO-SENTINEL'
 # The shared hook command also works with Claude's plugin-root variable alone.
 OUTPUT=$(cd "$CLAUDE_FIXTURE" && env -u PLUGIN_ROOT -u CLAUDE_PROJECT_DIR \
   CLAUDE_PLUGIN_ROOT="$REPO_ROOT" \
-  sh -c '"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT}}/hooks/session-start.sh"')
+  sh -c "$HOOK_COMMAND")
 assert_contains "$OUTPUT" 'TODO-SENTINEL'
 
 # PLUGIN_ROOT wins when both host root variables are present.
 OUTPUT=$(cd "$CLAUDE_FIXTURE" && env -u CLAUDE_PROJECT_DIR \
   PLUGIN_ROOT="$REPO_ROOT" \
   CLAUDE_PLUGIN_ROOT="$TMP_ROOT/not-the-plugin" \
-  sh -c '"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT}}/hooks/session-start.sh"')
+  sh -c "$HOOK_COMMAND")
 assert_contains "$OUTPUT" 'TODO-SENTINEL'
 
 # Without a host project variable or Git repository, use the current folder.

@@ -34,6 +34,10 @@ skill or directly asks for that action.
 
 ### Claude Code
 
+When migrating from the older personal install, remove the
+`~/.claude/skills/baton` symlink first so baton and its startup hook do not load
+twice.
+
 ```bash
 claude plugin marketplace add JiamanBettyWu/baton
 claude plugin install baton@baton

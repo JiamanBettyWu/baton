@@ -6,12 +6,18 @@
 # Both TODO.md and SESSIONS.md existing is the signal that the baton
 # convention is active; a lone TODO.md may be an unrelated scratch file.
 
+CURRENT_DIR="${PWD:-.}"
+
 if [ -n "${CLAUDE_PROJECT_DIR:-}" ]; then
   DIR="$CLAUDE_PROJECT_DIR"
+elif [ -f "$CURRENT_DIR/TODO.md" ]; then
+  # Codex has no project-directory variable. Prefer an initialized baton
+  # project in the working directory before considering a parent Git root.
+  DIR="$CURRENT_DIR"
 elif DIR=$(git rev-parse --show-toplevel 2>/dev/null); then
   :
 else
-  DIR="${PWD:-.}"
+  DIR="$CURRENT_DIR"
 fi
 
 TODO="$DIR/TODO.md"

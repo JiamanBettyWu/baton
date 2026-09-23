@@ -6,6 +6,19 @@ done, what was decided and why. History only; for what to do next see
 
 ---
 
+## 2026-09-22 (PR review: discovery and packaging regressions)
+
+Hardened three migration edges found in review. Without
+`CLAUDE_PROJECT_DIR`, the startup hook now checks the current folder for
+`TODO.md` before falling back to the Git root, so a baton-enabled subproject in
+a monorepo does not silently inherit or miss parent state. The README now tells
+users migrating from the old personal install to remove the
+`~/.claude/skills/baton` symlink before plugin installation, preventing double
+skill and hook loading. A package-metadata test now asserts that the portable
+and Claude compatibility manifests carry the same version.
+
+---
+
 ## 2026-09-22 (isolate records-only commits from the existing index)
 
 Fixed a commit-boundary bug found in review: staging only `TODO.md` and

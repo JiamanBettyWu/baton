@@ -27,8 +27,9 @@ assert_not_contains() {
 }
 
 write_todo() {
+  MARKER="${2:-TODO-SENTINEL}"
   mkdir -p "$1"
-  printf '%s\n' '# TODO' '' '## Current state' 'TODO-SENTINEL' > "$1/TODO.md"
+  printf '%s\n' '# TODO' '' '## Current state' "$MARKER" > "$1/TODO.md"
 }
 
 write_sessions() {
@@ -60,6 +61,18 @@ OUTPUT=$(cd "$CODEX_FIXTURE/nested/path" && env -u CLAUDE_PROJECT_DIR \
 assert_contains "$OUTPUT" 'TODO-SENTINEL'
 assert_contains "$OUTPUT" '2026-09-22 (latest fixture)'
 assert_not_contains "$OUTPUT" 'LATEST-JOURNAL-BODY'
+
+# Codex prefers baton state in the current folder over a containing Git root.
+MONOREPO="$TMP_ROOT/monorepo"
+write_todo "$MONOREPO" 'ROOT-TODO-SENTINEL'
+write_sessions "$MONOREPO"
+git -C "$MONOREPO" init -q
+SUBPROJECT="$MONOREPO/packages/subproject"
+write_todo "$SUBPROJECT" 'SUBPROJECT-TODO-SENTINEL'
+write_sessions "$SUBPROJECT"
+OUTPUT=$(cd "$SUBPROJECT" && env -u CLAUDE_PROJECT_DIR "$HOOK")
+assert_contains "$OUTPUT" 'SUBPROJECT-TODO-SENTINEL'
+assert_not_contains "$OUTPUT" 'ROOT-TODO-SENTINEL'
 
 # The shared hook command also works with Claude's plugin-root variable alone.
 OUTPUT=$(cd "$CLAUDE_FIXTURE" && env -u PLUGIN_ROOT -u CLAUDE_PROJECT_DIR \

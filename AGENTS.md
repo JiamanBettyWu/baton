@@ -37,7 +37,8 @@ Run before handing off a plugin change:
 
 ```bash
 bash tests/session-start.sh
-bash -n hooks/session-start.sh tests/session-start.sh
+bash tests/commit-scope.sh
+bash -n hooks/session-start.sh tests/session-start.sh tests/commit-scope.sh
 claude plugin validate . --strict
 claude plugin validate .claude-plugin/marketplace.json --strict
 ```

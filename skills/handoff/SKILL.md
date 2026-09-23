@@ -223,8 +223,11 @@ untracked:**
 - If you rotated the journal, the `git mv` already staged the rename; also
   `git add` the fresh `SESSIONS.md` so both the archive and the new file land in
   the commit.
-- Commit with the message `Handoff: <session title>` — the same title as the
-  new SESSIONS.md entry.
+- Commit with an explicit pathspec containing every file this handoff wrote:
+  `git commit --only -m "Handoff: <session title>" -- <TODO-path> <journal-path> [<other-written-paths>...]`.
+  The message uses the same title as the new SESSIONS.md entry. `--only`
+  prevents files staged before the handoff from leaking into its commit;
+  never use a plain `git commit` for this workflow.
 - **If the user wants substantive changes committed too, commit those
   SEPARATELY and FIRST**, then the handoff on top. The handoff commit stays a
   docs-only commit whatever else is in the tree: a commit titled `Handoff: …`

@@ -6,6 +6,18 @@ done, what was decided and why. History only; for what to do next see
 
 ---
 
+## 2026-09-22 (isolate records-only commits from the existing index)
+
+Fixed a commit-boundary bug found in review: staging only `TODO.md` and
+`SESSIONS.md` does not make a subsequent plain `git commit` records-only,
+because Git also includes anything that was already staged before the skill
+ran. Both handoff and decide now commit with `git commit --only` plus an
+explicit pathspec containing every record the workflow wrote. Unrelated staged
+work remains staged for its own commit. Added a regression fixture covering
+both existing record files and the first-run case where the records are new.
+
+---
+
 ## 2026-09-22 (restore Claude's explicit-invocation guard)
 
 Restored `disable-model-invocation: true` to both mutating skills after review

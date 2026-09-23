@@ -48,8 +48,11 @@ apart:
 - Stage only the journal and forward-looking files this workflow updated,
   using their exact paths. Never use `git add -A` or sweep unrelated changes
   into the commit.
-- Commit with `Decision D<n>: <short outcome>` when the decision has a number,
-  otherwise `Decision: <short outcome>`.
+- Commit with an explicit pathspec so files staged before this workflow cannot
+  leak into the records commit:
+  `git commit --only -m "Decision D<n>: <short outcome>" -- <journal-path> <forward-looking-path>`.
+  When the decision has no number, use `Decision: <short outcome>` instead.
+  Never use a plain `git commit` for this workflow.
 - If the user also asked to commit substantive project changes, commit those
   separately and first. The decision commit remains records-only.
 - Do not push. If the project is not a Git repository, skip the commit.

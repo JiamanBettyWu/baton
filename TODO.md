@@ -4,12 +4,13 @@ Forward-looking state. Session history lives in [SESSIONS.md](SESSIONS.md).
 
 ## Current state
 
-**As of 2026-09-22 (latest session):** baton has one portable implementation
-for Claude Code and Codex on branch `agent-agnostic-baton`: root Agent Plugins
-metadata, thin host catalogs, shared explicit-only skills, a host-neutral
-startup hook, and canonical contributor guidance. The persistence contract is
-unchanged, and both write workflows now create scoped records-only commits
-without pushing. Detail in [SESSIONS.md](SESSIONS.md).
+**As of 2026-11-04 (latest session):** baton 0.2.1 is on `main` with new
+journal fidelity rules in both write skills — full identifiers, `(unverified)`
+tags for read-not-tested claims, and explicit "corrects <date>" entries.
+Betty's machine now has the proper marketplace install (old
+`~/.claude/skills/baton` symlink removed). One manual follow-up: run the
+bundled Agent Skills validator locally against the updated skills. Detail in
+[SESSIONS.md](SESSIONS.md).
 
 ## Open decisions
 
@@ -17,6 +18,10 @@ without pushing. Detail in [SESSIONS.md](SESSIONS.md).
 
 ## Needs attention
 
+- ⚠️ **The bundled Agent Skills validator has not run against the 0.2.1 skill
+  changes** — the cloud sandbox blocked downloading it. Run it locally on
+  `skills/handoff` and `skills/decide`, expecting only its known rejection of
+  the `disable-model-invocation` extension.
 - ⚠️ **Rotation is unexercised** — the ~500-line archive path has never run
   against a real oversized journal; watch the first real rotation. (`baton`'s
   own journal is at 263 lines; `retrieval-lab`'s is at 449 and will trip first.)
@@ -40,10 +45,12 @@ without pushing. Detail in [SESSIONS.md](SESSIONS.md).
 
 ## Pick up here
 
-1. Dogfood in mise: end one Claude Code session with `/baton:handoff` and one
+1. Run the bundled Agent Skills validator locally against the 0.2.1 skills
+   (see "Needs attention").
+2. Dogfood in mise: end one Claude Code session with `/baton:handoff` and one
    Codex session with `$handoff`; compare the resulting files and scoped
    commits. Betty's own entries are the strictest test of format fidelity.
-2. After updating Codex, review and trust the baton hook in `/hooks`, then
+3. After updating Codex, review and trust the baton hook in `/hooks`, then
    confirm a new task receives all of `TODO.md` and only the latest
    `SESSIONS.md` heading.
 

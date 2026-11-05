@@ -30,6 +30,10 @@ exist, so a project with an unrelated `TODO.md` is unaffected.
 Both workflows are explicit-only. They do not run unless the user invokes the
 skill or directly asks for that action.
 
+If a project git-ignores any of its notes files, both workflows treat those
+files as local-only: they still write them but leave them out of the commit
+instead of forcing ignored paths into Git.
+
 ## Install
 
 ### Claude Code

@@ -58,4 +58,52 @@ git -C "$NEW" add TODO.md SESSIONS.md
 git -C "$NEW" commit -q --only -m 'Handoff: first fixture' -- TODO.md SESSIONS.md
 assert_records_only_commit "$NEW"
 
+# Partly ignored records: the ignored file is left out, the rest is committed.
+IGNORED="$TMP_ROOT/ignored-records"
+mkdir -p "$IGNORED"
+init_repo "$IGNORED"
+printf '%s\n' 'TODO.md' > "$IGNORED/.gitignore"
+git -C "$IGNORED" add .gitignore
+git -C "$IGNORED" commit -q -m 'Keep TODO local'
+printf '%s\n' 'staged feature work' > "$IGNORED/src/feature.py"
+git -C "$IGNORED" add src/feature.py
+printf '%s\n' '# TODO' > "$IGNORED/TODO.md"
+printf '%s\n' '# Session log' > "$IGNORED/SESSIONS.md"
+
+TO_COMMIT=''
+for path in TODO.md SESSIONS.md; do
+  STATUS=0
+  git -C "$IGNORED" check-ignore -q "$path" || STATUS=$?
+  case "$STATUS" in
+    0) ;;
+    1) TO_COMMIT="$TO_COMMIT $path" ;;
+    *) fail "check-ignore errored on $path (exit $STATUS)" ;;
+  esac
+done
+[ "$TO_COMMIT" = ' SESSIONS.md' ] || fail "unexpected paths to commit:$TO_COMMIT"
+
+# shellcheck disable=SC2086 # word splitting of the path list is intended
+git -C "$IGNORED" add $TO_COMMIT
+# shellcheck disable=SC2086
+git -C "$IGNORED" commit -q --only -m 'Handoff: partly ignored' -- $TO_COMMIT
+COMMITTED=$(git -C "$IGNORED" diff-tree --no-commit-id --name-only -r HEAD)
+[ "$COMMITTED" = 'SESSIONS.md' ] || fail "unexpected committed paths: $COMMITTED"
+[ "$(git -C "$IGNORED" diff --cached --name-only)" = 'src/feature.py' ] ||
+  fail 'unrelated staged path was not preserved'
+git -C "$IGNORED" ls-files --error-unmatch TODO.md >/dev/null 2>&1 &&
+  fail 'ignored TODO.md was committed'
+
+# A tracked file that matches an ignore pattern is not ignored: commit proceeds.
+printf '%s\n' 'SESSIONS.md' >> "$IGNORED/.gitignore"
+STATUS=0
+git -C "$IGNORED" check-ignore -q SESSIONS.md || STATUS=$?
+[ "$STATUS" -eq 1 ] || fail "tracked SESSIONS.md reported as ignored (exit $STATUS)"
+
+# Outside a repository, check-ignore errors out (128); that is not "ignored".
+OUTSIDE="$TMP_ROOT/not-a-repo"
+mkdir -p "$OUTSIDE"
+STATUS=0
+GIT_CEILING_DIRECTORIES="$TMP_ROOT" git -C "$OUTSIDE" check-ignore -q TODO.md 2>/dev/null || STATUS=$?
+[ "$STATUS" -eq 128 ] || fail "check-ignore outside a repo exited $STATUS, expected 128"
+
 echo 'commit-scope smoke tests passed'

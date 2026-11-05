@@ -50,6 +50,13 @@ then resolve to that project's files (for example, `docs/session-log.md` and
 After writing, commit the record so the journal and current plan cannot drift
 apart:
 
+- Before staging, run `git check-ignore -q <path>` on each file this workflow
+  updated. Exit 0 means ignored; exit 1 means not ignored; any other exit code
+  is an error, not "ignored". An ignored file is one the project keeps
+  local-only: leave it out of both `git add` and the commit pathspec, report
+  it as skipped, and commit the remaining files. If every file is ignored,
+  skip the commit. Never force it with `git add -f`, and do not add `--no-index`
+  to the check: an already-tracked file correctly reports as not ignored.
 - Stage only the journal and forward-looking files this workflow updated,
   using their exact paths. Never use `git add -A` or sweep unrelated changes
   into the commit.
@@ -63,5 +70,6 @@ apart:
 - Do not push. If the project is not a Git repository, skip the commit.
 
 Finally, show the user a short summary: where the decision was recorded, the
-plan changes, any invalidated work, and the commit SHA when one was created.
+plan changes, any invalidated work, and the commit SHA when one was created
+and which git-ignored paths were left out of it.
 Then ask if they want to start on the first next step now.

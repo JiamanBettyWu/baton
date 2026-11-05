@@ -222,7 +222,9 @@ follow-ups. Detail in [SESSIONS.md](SESSIONS.md).>
    starting a fresh journal." Proceed once they're on board.
 2. `mkdir -p sessions` and
    `git mv SESSIONS.md sessions/<oldest-date>--<newest-date>.md` — the date
-   range of the archived entries, so history stays greppable by date.
+   range of the archived entries, so history stays greppable by date. If
+   `git check-ignore -q SESSIONS.md` exits 0, the journal is local-only: use
+   plain `mv` instead, since `git mv` would fail or stage an ignored file.
 3. Start a fresh `SESSIONS.md` from the template, with a pointer line under the
    header: "Older entries archived in [`sessions/`](sessions/)."
 4. Write this session's entry as the first entry of the fresh file.
@@ -239,6 +241,18 @@ After writing, commit the handoff so the record is durable and the journal is
 shareable — **even on a repo's first handoff, when the files are new and
 untracked:**
 
+- **Before staging, check whether the project keeps these notes local-only.**
+  Run `git check-ignore -q <path>` on each file this handoff wrote. Exit 0
+  means the path is ignored; exit 1 means it is not; any other exit code is an
+  error, not "ignored".
+  - An ignored file is one the project keeps local-only: **leave it out** of
+    both `git add` and the commit pathspec below, and report it as skipped.
+    Commit the remaining files as usual. If every file is ignored, skip the
+    commit entirely.
+  - **Never force it:** no `git add -f`, and no `--no-index` on the check.
+    Without `--no-index`, an already-tracked file reports as not ignored even
+    if it matches a pattern, which is correct here — the project committed it
+    on purpose.
 - Stage **only** the files this handoff wrote or updated (`TODO.md`,
   `SESSIONS.md`, plus any doc the sweep updated under the traceable-drift rule
   above). `git add` them by path — this is what picks up new, untracked files
@@ -247,7 +261,8 @@ untracked:**
 - If you rotated the journal, the `git mv` already staged the rename; also
   `git add` the fresh `SESSIONS.md` so both the archive and the new file land in
   the commit.
-- Commit with an explicit pathspec containing every file this handoff wrote:
+- Commit with an explicit pathspec containing every non-ignored file this
+  handoff wrote:
   `git commit --only -m "Handoff: <session title>" -- <TODO-path> <journal-path> [<other-written-paths>...]`.
   The message uses the same title as the new SESSIONS.md entry. `--only`
   prevents files staged before the handoff from leaking into its commit;
@@ -266,4 +281,5 @@ After committing, report back:
 - Anything the sweep surfaced for their action — the "Needs attention" items,
   any docs you auto-updated under the traceable-drift rule, and any stale docs
   you flagged but left for them to confirm.
-- Which files you touched, whether you rotated the journal, and the commit SHA.
+- Which files you touched, whether you rotated the journal, the commit SHA
+  (if any), and which git-ignored paths were left out of the commit.

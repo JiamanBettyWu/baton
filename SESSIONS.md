@@ -6,6 +6,21 @@ done, what was decided and why. History only; for what to do next see
 
 ---
 
+## 2026-11-04 (merge remote baton 0.2.1 with local handoffs)
+
+Fetched `origin/main` at `e5f0e9321204aa7145e07682fb57e4c6c184965c`
+and merged its 0.2.1 manifests and journal-fidelity skill rules with local
+handoff commits `db27514` and `9384357`. The remote journal addition had
+replaced the heading of the older 2026-09-22 PR-review entry; merge resolution
+restored that heading and retained both new 2026-11-04 narratives and all
+older entry bodies. `TODO.md` now points to the merged state instead of
+repeating the resolved 0.2.0-versus-0.2.1 mismatch. The shell, commit-scope,
+package-metadata, syntax, and marketplace-manifest checks passed. Both 0.2.1
+skills passed the bundled Agent Skills validator after removing only the
+intentional `disable-model-invocation` key in temporary copies; strict Claude
+root validation still exits nonzero on the expected `CLAUDE.md` warning plus
+`ICON_MISSING`. No plugin or user hook was changed during this merge.
+
 ## 2026-11-04 (Codex startup context verified through user hook)
 
 Checked the existing baton 0.2 checkout before changing anything. The
@@ -85,6 +100,50 @@ task predates that installation. A fresh task still needs to prove live skill
 discovery and trusted SessionStart injection; no workaround or duplicate hook
 body was added for the older app-bundled runtime.
 
+## 2026-11-04 (journal fidelity rules: full identifiers, unverified tags, corrections)
+
+Shipped three record-fidelity conventions into both write skills, from Betty's
+own proposal. `skills/handoff/SKILL.md` gained three Rules entries and
+`skills/decide/SKILL.md` a condensed mirror in its journal-recording step
+(PR [#3](https://github.com/JiamanBettyWu/baton/pull/3), squash-merged as
+`bb78dcf`): identifiers are written out in full as they exist (tables, columns,
+files, tickets) and every selection names the inputs that produced it; a claim
+that records a *reading* of data or code rather than a tested result is tagged
+`(unverified)` at the claim level, ideally with its source; and when a session
+disproves an earlier journal entry, the new entry says "corrects <date>: …"
+while the old entry stays untouched — the corrections convention is what makes
+the append-only rule safe, since append-only without corrections makes errors
+permanent. The sweep also checks whether a corrected claim leaked into
+TODO.md's current state. Versions then moved to 0.2.1 in both `plugin.json`
+and `.claude-plugin/plugin.json`
+(PR [#4](https://github.com/JiamanBettyWu/baton/pull/4), merged as `997b9d8`).
+
+**Validation gap (environment):** the cloud sandbox blocked downloading the
+bundled Agent Skills validator, so the change was verified only by
+`tests/session-start.sh`, `tests/commit-scope.sh`, `tests/package-metadata.sh`,
+`bash -n`, and `claude plugin validate . --strict` — which showed the one
+documented expected `CLAUDE.md` warning plus a plugin-directory `ICON_MISSING`
+notice that does not affect validation and predates this change (unverified —
+inferred from the change touching only skill prose, not re-run against the
+prior commit). The skill validator should be run locally once.
+
+**Install archaeology on Betty's machine:** `claude plugin install baton@baton`
+failed with "Plugin not found in marketplace" because the `baton` marketplace
+had never been added there — only the pre-plugin personal install existed, a
+symlink `~/.claude/skills/baton -> ~/dev/baton` from July. Removed the symlink
+(the README's documented migration step), then
+`claude plugin marketplace add JiamanBettyWu/baton` and
+`claude plugin install baton@baton` succeeded. Worth remembering: installs are
+two cached layers (marketplace clone, then plugin copy), so publishing a change
+means `claude plugin marketplace update baton` *then*
+`claude plugin update baton@baton`, and a new session to load it.
+
+**Environment quirk:** the Claude Code cloud sandbox's permission classifier
+denies `git push --delete`, `git push --force-with-lease`, and GitHub-API
+branch deletion as destructive, even on a branch holding only merged history.
+After a squash merge, replacing the remote work branch therefore needs the
+user to delete it by hand; a true merge (as in PR #4) avoids this because the
+restarted branch fast-forwards.
 ## 2026-09-22 (PR review: discovery and packaging regressions)
 
 Hardened three migration edges found in review. Without

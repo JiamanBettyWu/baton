@@ -4,38 +4,32 @@ Forward-looking state. Session history lives in [SESSIONS.md](SESSIONS.md).
 
 ## Current state
 
-**As of 2026-11-04 (latest session):** Codex discovers both baton skills, and
-Betty confirmed startup context in a fresh local task after a user-level
-hook was installed at `~/.codex/hooks.json`. The bundled plugin hook still does
-not appear in Hooks; the local checkout is 0.2.0 while Codex has 0.2.1
-installed. Detail in [SESSIONS.md](SESSIONS.md).
+**As of 2026-11-04 (latest session):** `main` now has baton 0.2.1's journal
+fidelity rules plus both local handoff commits. Codex discovers both skills,
+and Betty confirmed startup context in a fresh local task through the
+user-level hook at `~/.codex/hooks.json`; bundled-hook discovery remains
+unresolved. Detail in [SESSIONS.md](SESSIONS.md).
 
 ## Needs attention
 
-- ⚠️ **Rotation is unexercised** — the ~500-line archive path has never run
-  against a real oversized journal; `SESSIONS.md` was 338 lines before this
-  entry, so watch its first real rotation.
-- ⚠️ **The skill cannot hand off a repo other than the session's own.** This
-  entry was written by hand from a `retrieval-lab` session, because the work
-  happened there and the narrative only exists where the session was. Not
-  obviously worth fixing — cross-repo targeting is a real complication for a
-  rare case — but it is a known edge, not an oversight.
 - ⚠️ **Bundled Codex hook discovery remains unresolved.** The 0.2.1 plugin is
-  enabled and its skills load, but `Settings > Hooks` and an isolated
-  `hooks/list` probe show no plugin hook. The working user hook points at
-  `/Users/jiamanwu/dev/baton/hooks/session-start.sh`, so moving this checkout
-  requires updating `~/.codex/hooks.json`. `README.md` still describes the
-  bundled-hook trust path; update it after the cause and supported fix are
-  established (see SESSIONS.md 2026-11-04).
-- ⚠️ **Checkout and installation differ.** This checkout has `plugin.json`
-  0.2.0 and local `main` includes unpushed `db27514`; Codex has 0.2.1 from
-  marketplace revision `e5f0e9321204aa7145e07682fb57e4c6c184965c`.
-  Reconcile before editing plugin sources or pushing.
-- ⚠️ **Strict Claude plugin validation has a new warning.** Besides the
-  documented root `CLAUDE.md` warning, `claude plugin validate . --strict`
-  reports `ICON_MISSING`; decide whether to add a listing icon before the
-  next packaging handoff. The bundled skill validator's rejection of
-  `disable-model-invocation` remains expected.
+  enabled and its skills load, but isolated `hooks/list` probes found no
+  plugin-sourced hook. The visible working hook is from User config and points
+  at `/Users/jiamanwu/dev/baton/hooks/session-start.sh`, so moving this
+  checkout requires updating `~/.codex/hooks.json`. `README.md` still
+  describes the bundled-hook trust path; update it after the cause and
+  supported fix are established (see SESSIONS.md 2026-11-04).
+- ⚠️ **Strict Claude plugin validation reports `ICON_MISSING`.** The root
+  `CLAUDE.md` warning is expected, but the icon warning is additional and
+  `claude plugin validate . --strict` exits nonzero. Decide whether to add a
+  listing icon before the next packaging handoff. The bundled Agent Skills
+  validator rejected only the expected `disable-model-invocation` extension;
+  both 0.2.1 skills passed in temporary copies without that key.
+- ⚠️ **Rotation is unexercised** — the ~500-line archive path has never run
+  against a real oversized journal; watch its first real rotation.
+- ⚠️ **The skill cannot hand off a repo other than the session's own.** The
+  2026-09-22 entry was written by hand from a `retrieval-lab` session because
+  the work happened there. Cross-repo targeting remains a known edge.
 
 ## Scratch — not yet promoted
 
@@ -45,13 +39,13 @@ installed. Detail in [SESSIONS.md](SESSIONS.md).
 
 ## Pick up here
 
-1. Reconcile local `main`/`plugin.json` 0.2.0 with installed baton 0.2.1 and
-   preserve the unpushed `db27514` handoff commit.
-2. Diagnose why the bundled `hooks/hooks.json` is absent from Codex Hooks;
+1. Diagnose plugin-sourced hook discovery on the installed 0.2.1 package;
    keep the working user hook until the native path is verified, then update
-   `README.md` and its installation guidance.
-3. Dogfood in mise: compare Claude Code `/baton:handoff` with Codex
+   `README.md`.
+2. Dogfood in mise: compare Claude Code `/baton:handoff` with Codex
    `$baton:handoff`, including file output, scoped commit contents, and no push.
+3. Resolve the `ICON_MISSING` strict-validator warning before the next plugin
+   packaging handoff.
 
 **Later —** work port (repo public as of 2026-07-13, so plain clone works):
 clone on the work laptop, check the company's plugin policy, test — falling

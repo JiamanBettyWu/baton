@@ -32,6 +32,11 @@ then resolve to that project's files (for example, `docs/session-log.md` and
    chosen option, and the stated reason — ask for the reason if the user
    didn't give one and it isn't obvious; future sessions and future blog
    posts need the *why*. Keep the decision's number (D3) for reference.
+   Write identifiers in full as they exist (table, column, file, ticket
+   names), and when the reasoning rests on a reading of data or code rather
+   than a tested result, tag that claim `(unverified)`. If the outcome
+   disproves an earlier journal entry, say so explicitly in the new entry
+   ("corrects <date>: …") — never edit the old entry.
 4. Reconcile `TODO.md`:
    - Remove the decision from "Open decisions" (its record now lives in the
      journal).

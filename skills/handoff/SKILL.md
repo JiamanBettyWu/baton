@@ -109,6 +109,26 @@ delete old entries.
 
 - **Be specific.** `path/to/file.py:123`, branch names, ticket IDs, exact
   commands. "Fixed the bug" is useless three weeks later.
+- **Write identifiers out in full, as they exist.** Table, column, file,
+  branch, and ticket names appear verbatim — `analytics_prod.daily_events_v3`,
+  not "the analytics table" — so the journal stays greppable. When an entry
+  records a selection ("the three slowest queries", "the flaky tests"), also
+  name the inputs behind it: the query, command, or criteria that produced
+  that list. A selection without its criteria can't be re-derived or audited
+  later.
+- **Tag unverified claims.** When a claim records a *reading* of data or code
+  rather than a tested or observed result, mark that claim `(unverified)` —
+  ideally with the source: "falls back to the Git root `(unverified — read
+  from hooks/session-start.sh, not exercised)`". Tag the specific claim, not
+  the whole entry; entries usually mix tested results and readings. Don't tag
+  defensively — the tag marks the read-vs-tested distinction, not general
+  uncertainty.
+- **Correct, never edit.** When this session disproves an earlier journal
+  entry, the new entry says so explicitly — "corrects 2026-07-10: the hook
+  does not fall back to the Git root; …" — citing the entry by date. The old
+  entry stays unchanged as history, but the correction stops the error from
+  propagating. Also check whether the corrected claim leaked into TODO.md's
+  current state, and fix it there.
 - **Point to history, don't inline it.** Work is not linear — when a next
   step resumes an older thread, cite the journal entry by date ("see
   SESSIONS.md 2026-07-10") instead of re-summarizing it.
@@ -156,7 +176,9 @@ decision.>
 
 Keep entries as flowing narrative, not form fields — the journal is written
 to be mined months later (blog posts, resuming parked threads), and prose
-with occasional bold sub-labels reads better than bulleted fields.
+with occasional bold sub-labels reads better than bulleted fields. Full
+identifiers, `(unverified)` tags, and "corrects <date>: …" lines (see Rules)
+belong in that narrative.
 
 `TODO.md`:
 

@@ -71,6 +71,21 @@ plugin and start a new task after changes. Local-path installation copies that
 directory, including ignored files, so do not point it at a working copy that
 contains private local configuration.
 
+### Update
+
+Refresh the marketplace, then update the plugin. Start a new session or task
+afterward so the new version loads.
+
+```bash
+# Claude Code
+claude plugin marketplace update baton
+claude plugin update baton@baton
+
+# Codex
+codex plugin marketplace upgrade baton
+codex plugin add baton@baton
+```
+
 ## Projects with their own conventions
 
 If a project documents a session-notes workflow in an active instruction file

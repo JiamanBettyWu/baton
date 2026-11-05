@@ -6,6 +6,74 @@ done, what was decided and why. History only; for what to do next see
 
 ---
 
+## 2026-11-05 (skip git-ignored record files; baton 0.2.2)
+
+Betty proposed that the skills run `git check-ignore -q <path>` on each
+record file before staging, and treat ignored notes as local-only instead of
+forcing them into Git. Shipped as `d552c8f` ("Skip git-ignored record files
+instead of forcing them") on `feat/skip-ignored-records`, merged as PR #6
+(`5097e92`). That branch is now deleted locally and on `origin`. The rule
+lives in both `skills/handoff/SKILL.md` ("Commit the handoff", plus the
+rotation step) and `skills/decide/SKILL.md` ("Commit the decision record").
+Both stage records the same way, so applying it only to handoff would have
+let `decide` force-commit what handoff skips.
+
+**Per-file skip, not whole-commit skip (the real decision):** the first draft
+skipped the entire commit if *any* record file was ignored, on the theory that
+committing only some records lets the journal and plan drift apart in history.
+Betty pushed back, and she was right. A project that ignores `TODO.md` but
+tracks `SESSIONS.md` has already chosen to keep the plan local and share the
+journal. Skipping everything breaks that choice: the journal never gets
+committed, and a tracked README drift fix is left uncommitted. The final rule
+leaves each ignored file out of both `git add` and the
+`git commit --only -- <paths>` pathspec. Untracked ignored paths must also
+stay out of the pathspec, because naming one there makes Git stop with
+"pathspec did not match". The commit is skipped only when every file is
+ignored. The report-back lists the skipped paths.
+
+**Exit-code semantics, tested in a scratch repo:** `git check-ignore -q`
+returns 0 for an untracked ignored file and 1 for a file that is not ignored.
+It also returns 1 for a **tracked** file that matches an ignore pattern, since
+Git does not apply ignore rules to tracked files. With `--no-index` that same
+tracked file returns 0. So the skills forbid `--no-index` (a file the project
+already commits must keep being committed) and forbid `git add -f`. Outside
+a repository the command exits 128; the skills call that an error, not
+"ignored". Rotation now uses plain `mv` instead of `git mv` when `SESSIONS.md`
+is ignored. A new fixture in `tests/commit-scope.sh` covers the
+partly-ignored case (only `SESSIONS.md` committed, staged `src/feature.py`
+preserved, `TODO.md` never tracked), the tracked-file exit 1, and exit 128
+outside a repo with `GIT_CEILING_DIRECTORIES`. README gained a paragraph
+under "Skills". The version is now 0.2.2 in both `plugin.json` and
+`.claude-plugin/plugin.json`. The full AGENTS.md validation block passed apart
+from the known `CLAUDE.md` and `ICON_MISSING` warnings.
+
+**Reinstalls:** Claude Code was installed as `baton@baton` 0.2.0. Ran
+`claude plugin marketplace update baton` and then
+`claude plugin update baton@baton`, which reported 0.2.0 → 0.2.2. Codex
+reported 0.2.1. Ran `codex plugin marketplace upgrade baton` and then
+`codex plugin add baton@baton`, which installed to
+`~/.codex/plugins/cache/baton/baton/0.2.2`. Both installed copies contain the
+`check-ignore` rule in both skills (grepped). Whether a fresh session in each
+host loads 0.2.2 is `(unverified — no new session started yet)`. The Codex
+startup hook still runs through the user-level `~/.codex/hooks.json`, which
+points at `/Users/jiamanwu/dev/baton/hooks/session-start.sh`; the reinstall
+did not touch it.
+
+**Version label versus content:** during the session I told Betty that the
+Claude Code install "never got the 0.2.1 journal rules". That was wrong. The
+cached `~/.claude/plugins/cache/baton/baton/0.2.0/skills/handoff/SKILL.md`
+already has the fidelity rules: they landed in `bb78dcf` (PR #3), before
+the version bump in `9a67681`, and the install was taken between the two. Only
+the version label was behind. This handoff itself ran from that 0.2.0 cache,
+because the session started before the update, so it lacks the new ignore
+check. That has no effect here, because `TODO.md` and `SESSIONS.md` are
+tracked in baton.
+
+**README update steps:** added an "Update" subsection under "Install" with
+the marketplace-refresh and update commands for both hosts (the same commands
+used above). Committed directly to `main` as `082fdd7` at Betty's request,
+since it is docs-only, and pushed.
+
 ## 2026-11-04 (merge remote baton 0.2.1 with local handoffs)
 
 Fetched `origin/main` at `e5f0e9321204aa7145e07682fb57e4c6c184965c`

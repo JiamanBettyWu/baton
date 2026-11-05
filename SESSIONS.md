@@ -6,6 +6,50 @@ done, what was decided and why. History only; for what to do next see
 
 ---
 
+## 2026-11-04 (Codex startup context verified through user hook)
+
+Checked the existing baton 0.2 checkout before changing anything. The
+`tests/session-start.sh`, `tests/commit-scope.sh`, and
+`tests/package-metadata.sh` suites and shell syntax checks passed; strict
+validation of `.claude-plugin/marketplace.json` passed. The bundled Agent
+Skills validator rejected both skills only for the intentional
+`disable-model-invocation: true` Claude extension; temporary copies without
+that key passed. `claude plugin validate . --strict` failed on the documented
+root `CLAUDE.md` warning plus a newly observed `ICON_MISSING` warning, so the
+repository's stated strict-validation bar is not currently met. No plugin
+source was edited to suppress either diagnostic.
+
+The first new Codex task did not receive startup context. After a desktop
+restart, the skill picker showed both `baton:handoff` and `baton:decide`, and
+the Plugins page showed the baton marketplace and installed plugin. The CLI
+reported `baton@baton` 0.2.1 enabled, from marketplace revision
+`e5f0e9321204aa7145e07682fb57e4c6c184965c`; that installed package has
+newer skill text than this 0.2.0 checkout, while its hook files match. The
+local `main` still has the earlier unpushed `db27514` handoff commit.
+
+Corrects the 2026-09-22 expectation that the next Codex step is simply to
+trust baton's bundled hook: despite the installed skills, the bundled
+`SessionStart` handler was absent from `Settings > Hooks`. Isolated probes
+using the desktop-bundled Codex CLI `0.166.0-alpha.5.1` and standalone CLI
+`0.156.1` reproduced this split: `skills/list` found both skills, while
+`hooks/list` returned an empty list with no warnings or errors. The same
+`hooks/hooks.json` was discovered as an untrusted user hook in a temporary
+home. Simpler commands, default-file discovery, a compatibility manifest,
+and `requires_local_executor` did not make the plugin hook appear in those
+probes. The cause of plugin hook omission remains unverified.
+
+Betty approved a local workaround, so `~/.codex/hooks.json` now points to
+`/Users/jiamanwu/dev/baton/hooks/session-start.sh`. The JSON was validated,
+the exact user-hook definition appeared as untrusted in an isolated
+`hooks/list` probe, and direct script output contained `TODO.md` plus the
+latest `SESSIONS.md` heading. Betty later reported that a fresh local Codex
+task received baton startup context. This proves the
+user-level path in practice; it does not prove the bundled plugin hook. The
+absolute script path is tied to this checkout. `README.md` still describes
+the bundled-hook trust path, but its correction waits on an established cause
+or supported packaging fix. No repo source or README file changed in this
+session, and nothing was pushed.
+
 ## 2026-09-22 (baton 0.2 merged and installed for Codex)
 
 Completed the agent-agnostic migration and merged PR #2 as `92df370`. Baton

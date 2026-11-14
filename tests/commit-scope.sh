@@ -106,4 +106,40 @@ STATUS=0
 GIT_CEILING_DIRECTORIES="$TMP_ROOT" git -C "$OUTSIDE" check-ignore -q TODO.md 2>/dev/null || STATUS=$?
 [ "$STATUS" -eq 128 ] || fail "check-ignore outside a repo exited $STATUS, expected 128"
 
+# Parked decisions: a new PARKED.md joins the records-only commit.
+PARKED="$TMP_ROOT/parked-records"
+mkdir -p "$PARKED"
+init_repo "$PARKED"
+printf '%s\n' '# TODO' '' '## Open decisions' '' '### D1: question' > "$PARKED/TODO.md"
+printf '%s\n' '# Session log' > "$PARKED/SESSIONS.md"
+git -C "$PARKED" add TODO.md SESSIONS.md
+git -C "$PARKED" commit -q -m 'Add records'
+
+assert_parked_commit() {
+  COMMITTED=$(git -C "$PARKED" diff-tree --no-commit-id --name-only -r HEAD | sort)
+  EXPECTED=$(printf '%s\n' 'PARKED.md' 'SESSIONS.md' 'TODO.md')
+  [ "$COMMITTED" = "$EXPECTED" ] || fail "unexpected committed paths: $COMMITTED"
+  [ "$(git -C "$PARKED" diff --cached --name-only)" = 'src/feature.py' ] ||
+    fail 'unrelated staged path was not preserved'
+}
+
+printf '%s\n' 'staged feature work' > "$PARKED/src/feature.py"
+git -C "$PARKED" add src/feature.py
+printf '%s\n' '# Parked decisions' '' '### D1: question' > "$PARKED/PARKED.md"
+printf '%s\n' '# TODO' '' '## Parked decisions' '' '- D1' > "$PARKED/TODO.md"
+printf '%s\n' '# Session log' '' 'D1 parked' > "$PARKED/SESSIONS.md"
+git -C "$PARKED" add TODO.md SESSIONS.md PARKED.md
+git -C "$PARKED" commit -q --only -m 'Decision D1: parked until later' -- TODO.md SESSIONS.md PARKED.md
+assert_parked_commit
+
+# Settling the last parked decision deletes PARKED.md; the commit records that.
+rm "$PARKED/PARKED.md"
+printf '%s\n' '# TODO' > "$PARKED/TODO.md"
+printf '%s\n' '# Session log' '' 'D1 parked' 'D1 chose A' > "$PARKED/SESSIONS.md"
+git -C "$PARKED" add TODO.md SESSIONS.md PARKED.md
+git -C "$PARKED" commit -q --only -m 'Decision D1: choose A' -- TODO.md SESSIONS.md PARKED.md
+assert_parked_commit
+git -C "$PARKED" ls-files --error-unmatch PARKED.md >/dev/null 2>&1 &&
+  fail 'deleted PARKED.md is still tracked'
+
 echo 'commit-scope smoke tests passed'

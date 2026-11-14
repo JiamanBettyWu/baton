@@ -25,7 +25,7 @@ exist, so a project with an unrelated `TODO.md` is unaffected.
 | Workflow | Claude Code | Codex | What it does |
 | --- | --- | --- | --- |
 | Handoff | `/baton:handoff [notes]` | `$handoff` with optional notes | Sweeps for loose ends and stale docs, appends to `SESSIONS.md`, refreshes `TODO.md`, and creates a scoped commit that never pushes |
-| Decide | `/baton:decide <outcome>` | `$decide` with the outcome | Logs a decision and its reasoning, promotes the matching branch of the plan, flags invalidated work, and creates a scoped records-only commit |
+| Decide | `/baton:decide <outcome>` | `$decide` with the outcome | Logs a decision and its reasoning, promotes the matching branch of the plan (or parks or withdraws the decision), flags invalidated work, and creates a scoped records-only commit |
 
 Both workflows are explicit-only. They do not run unless the user invokes the
 skill or directly asks for that action.
@@ -114,8 +114,9 @@ above.
 The state files are human-readable, human-editable, and reviewable in Git.
 Both skills stage only the records they created or updated and never push.
 `TODO.md` stays current-state only; resolved decisions move to the append-only
-journal. If handoffs are frequently missed, add a host-supported end-of-session
-reminder rather than duplicating the workflow.
+journal, and parked decisions keep their full options in `PARKED.md` with a
+one-line pointer in `TODO.md`. If handoffs are frequently missed, add a
+host-supported end-of-session reminder rather than duplicating the workflow.
 
 ## License
 

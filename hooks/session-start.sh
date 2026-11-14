@@ -3,14 +3,21 @@
 # Supported hosts add plain stdout to context, so this needs no jq or JSON and
 # stays portable to locked-down machines.
 #
-# Both TODO.md and SESSIONS.md existing is the signal that the baton
-# convention is active; a lone TODO.md may be an unrelated scratch file.
+# A SESSIONS.md journal is the signal that the baton convention is active.
+# The journal is local-only by default, so a fresh clone or worktree may have
+# TODO.md alone: that still counts when TODO.md points at SESSIONS.md, as
+# baton's template does. Any other lone TODO.md may be an unrelated scratch
+# file and stays silent.
+
+baton_todo() {
+  [ -f "$1" ] && grep -q 'SESSIONS\.md' "$1"
+}
 
 CURRENT_DIR="${PWD:-.}"
 
 if [ -n "${CLAUDE_PROJECT_DIR:-}" ]; then
   DIR="$CLAUDE_PROJECT_DIR"
-elif [ -f "$CURRENT_DIR/SESSIONS.md" ]; then
+elif [ -f "$CURRENT_DIR/SESSIONS.md" ] || baton_todo "$CURRENT_DIR/TODO.md"; then
   # Codex has no project-directory variable. Prefer an initialized baton
   # project in the working directory before considering a parent Git root.
   DIR="$CURRENT_DIR"
@@ -35,6 +42,14 @@ elif [ -f "$SESSIONS" ]; then
   # flag that the next handoff should initialize TODO.md.
   LATEST=$(grep -m1 '^## ' "$SESSIONS")
   echo "This project keeps a dated session journal in SESSIONS.md (latest entry: ${LATEST#\#\# }) but has no TODO.md current-state file yet. Read the latest journal entry to catch up; the next handoff should initialize TODO.md."
+elif baton_todo "$TODO"; then
+  # Current state without a journal: the journal is local-only and this
+  # checkout does not have it.
+  echo "This project keeps handoff state in TODO.md (current). Its session journal SESSIONS.md is local-only and is not in this checkout, so journal entries cited by date are unavailable here. TODO.md:"
+  echo
+  cat "$TODO"
+  echo
+  echo "(Suggest the handoff skill before the session ends; it will start a local journal here. If the user reports a team decision, suggest the decide skill.)"
 fi
 
 exit 0

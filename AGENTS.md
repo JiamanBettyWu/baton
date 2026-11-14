@@ -11,8 +11,9 @@ only for discovery, installation, or invocation policy.
 - `hooks/hooks.json` and `hooks/session-start.sh` own startup behavior.
 - `.claude-plugin/` and `.agents/` are thin host adapters.
   Do not copy workflow instructions into them.
-- `TODO.md` is current state. `SESSIONS.md` is append-only history; never edit
-  old entries to modernize terminology.
+- `TODO.md` is current state and is committed. `SESSIONS.md` is append-only
+  history; never edit old entries to modernize terminology. The journal and
+  its `sessions/` archive are git-ignored and stay local to each checkout.
 
 ## Portability rules
 

@@ -99,11 +99,39 @@ delete old entries.
     start.
   - Omit the section entirely when nothing is genuinely unsettled — an empty
     heading invites the next handoff to refill it.
+- **Parked decisions:** one line per decision the user chose to set aside,
+  written by the decide workflow:
+  `- **D<n>: <question>** — revisit when <trigger>. See PARKED.md.`
+  The full record of each lives in `PARKED.md` (or the file the project's
+  convention names). Carry these lines over unchanged; a refresh must not drop
+  them, expand them back into full blocks, or fold them into "Open
+  decisions". Parking or withdrawing a decision is the user's call and goes
+  through the decide workflow — never do it yourself because a decision looks
+  stale; flag it under "Needs attention" instead. If this session shows a
+  revisit trigger has fired, flag that under "Needs attention" and offer to
+  reopen the decision: move its section from `PARKED.md` back under "Open
+  decisions" with the same number, remove its line here, and add `PARKED.md`
+  to the handoff commit by path. Omit the section entirely when nothing is
+  parked.
+  - **Decisions already marked as parked.** If `TODO.md` carries parked
+    decisions in another shape — a "parked", "on hold", "backlog", or "later"
+    label, or a note on a block still sitting under "Open decisions" — bring
+    them into this layout during the refresh. Tell the user which ones you
+    found, move each block into its own section of `PARKED.md` (create the
+    file with a `# Parked decisions` heading if it is missing), add
+    `- **Parked:** <date> — <reason>` and `- **Revisit when:** <trigger>`
+    lines to it, and leave the one-line pointer here. This is a change of
+    format, not a new decision: keep the wording and the number (give it the
+    next number if it has none), and write "not recorded" for a missing date,
+    reason, or trigger instead of inventing one. Note the move in the journal
+    entry with the numbers, and add `PARKED.md` to the handoff commit by path.
 - **Needs attention:** flags for the repo owner surfaced by the sweep above.
   Omit the section entirely when there's nothing to flag.
 - **Pick up here:** the next 2–3 concrete actions. Not a backlog.
 - Remove lines that referenced now-finished work. Resolved decisions leave
   TODO.md entirely — their record is the journal entry that resolved them.
+  A parked decision is not resolved: it keeps its one line, and its full
+  record stays in `PARKED.md`.
 
 ## Rules
 
@@ -140,8 +168,8 @@ delete old entries.
   and keeps only the *narrative* — what happened and in what order. Two prose
   copies of the same decision will drift.
 - **D-numbers are project-lifetime and never reused.** Next number = highest
-  D-number ever used + 1 — resolved decisions leave TODO.md, so check the
-  journal
+  D-number ever used + 1 — resolved decisions leave TODO.md, and parked ones
+  keep their number, so check the journal
   (`find . -maxdepth 2 -type f \( -path './SESSIONS.md' -o -path './sessions/*.md' \) -exec grep -hEo 'D[0-9]+' {} + | sort -u`)
   before numbering a new one. This avoids unmatched shell globs when no
   archive directory exists and requires at least one digit after `D`.
@@ -199,6 +227,11 @@ follow-ups. Detail in [SESSIONS.md](SESSIONS.md).>
 - **Recommendation:** <which and why>
 - **Blocked on:** <who/what, since when>
 - **If A:** <next steps> · **If B:** <next steps, incl. what gets reverted>
+
+## Parked decisions
+
+<Omit this whole section when nothing is parked.>
+- **D2: <one-line question>** — revisit when <trigger>. See PARKED.md.
 
 ## Needs attention
 

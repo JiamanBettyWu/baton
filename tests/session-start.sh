@@ -112,6 +112,19 @@ write_todo "$TODO_ONLY"
 OUTPUT=$(CLAUDE_PROJECT_DIR="$TODO_ONLY" "$HOOK")
 [ -z "$OUTPUT" ] || fail 'TODO-only project should produce no output'
 
+# A baton TODO.md without its local-only journal still injects current state.
+NO_JOURNAL="$TMP_ROOT/no-journal"
+mkdir -p "$NO_JOURNAL"
+printf '%s\n' '# TODO' '' 'History lives in [SESSIONS.md](SESSIONS.md).' '' \
+  '## Current state' 'NO-JOURNAL-SENTINEL' > "$NO_JOURNAL/TODO.md"
+OUTPUT=$(CLAUDE_PROJECT_DIR="$NO_JOURNAL" "$HOOK")
+assert_contains "$OUTPUT" 'NO-JOURNAL-SENTINEL'
+assert_contains "$OUTPUT" 'is not in this checkout'
+
+# The same holds for Codex-style discovery from the current folder.
+OUTPUT=$(cd "$NO_JOURNAL" && env -u CLAUDE_PROJECT_DIR "$HOOK")
+assert_contains "$OUTPUT" 'NO-JOURNAL-SENTINEL'
+
 EMPTY="$TMP_ROOT/empty"
 mkdir -p "$EMPTY"
 OUTPUT=$(CLAUDE_PROJECT_DIR="$EMPTY" "$HOOK")

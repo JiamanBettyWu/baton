@@ -14,11 +14,14 @@ the plan that invalidates.
   current-state pointer, open decisions with options and trade-offs, and the
   next 2–3 actions.
 - **`SESSIONS.md`** — an append-only dated journal: one narrative entry per
-  session, with decisions recorded alongside their reasoning.
+  session, with decisions recorded alongside their reasoning. It is
+  **local-only by default**: the first handoff adds it to `.gitignore`, so
+  session detail is not pushed. See [Journal privacy](#journal-privacy).
 
 A `SessionStart` hook injects `TODO.md` plus the latest journal entry's title
-when a session starts or resumes. The hook activates only when both files
-exist, so a project with an unrelated `TODO.md` is unaffected.
+when a session starts or resumes. The hook activates when the journal exists,
+or when `TODO.md` points at `SESSIONS.md` (a clone without the local journal),
+so a project with an unrelated `TODO.md` is unaffected.
 
 ## Skills
 
@@ -109,9 +112,28 @@ If Codex discovers the skills but `/hooks` shows no baton hook, update to a
 Codex build that supports portable plugin hooks or use the manual fallback
 above.
 
+## Journal privacy
+
+Session journals collect private detail: local paths, names, and dead ends.
+So when a handoff creates the journal in a Git repository, it adds
+`SESSIONS.md` and the `sessions/` archive to `.gitignore`. `TODO.md` is still
+committed. A local-only journal has no Git history or backup, and it does not
+exist in other clones.
+
+- **To share the journal instead:** ask for that at the first handoff, or
+  later remove the two lines from `.gitignore`. The next handoff then commits
+  the journal.
+- **To make an already-committed journal local-only:** baton never does this
+  on its own. Add the two lines to `.gitignore` and run
+  `git rm --cached SESSIONS.md` (and `git rm -r --cached sessions` if the
+  archive exists). Two warnings: entries already pushed stay in the Git
+  history, and every other clone loses its copy of the file on the next pull,
+  so back the journal up there first.
+
 ## Notes
 
-The state files are human-readable, human-editable, and reviewable in Git.
+The state files are human-readable and human-editable, and `TODO.md` is
+reviewable in Git.
 Both skills stage only the records they created or updated and never push.
 `TODO.md` stays current-state only; resolved decisions move to the append-only
 journal, and parked decisions keep their full options in `PARKED.md` with a

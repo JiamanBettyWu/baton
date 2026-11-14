@@ -142,4 +142,40 @@ assert_parked_commit
 git -C "$PARKED" ls-files --error-unmatch PARKED.md >/dev/null 2>&1 &&
   fail 'deleted PARKED.md is still tracked'
 
+# Default local-only journal: the first handoff ignores the journal and its
+# archive, and commits TODO.md plus the .gitignore lines it added.
+LOCAL="$TMP_ROOT/local-journal"
+mkdir -p "$LOCAL/sessions"
+init_repo "$LOCAL"
+printf '%s\n' 'staged feature work' > "$LOCAL/src/feature.py"
+git -C "$LOCAL" add src/feature.py
+printf '%s\n' 'SESSIONS.md' 'sessions/' > "$LOCAL/.gitignore"
+printf '%s\n' '# TODO' > "$LOCAL/TODO.md"
+printf '%s\n' '# Session log' > "$LOCAL/SESSIONS.md"
+printf '%s\n' '# Session log' > "$LOCAL/sessions/2026-01-01--2026-02-01.md"
+
+TO_COMMIT=''
+for path in TODO.md SESSIONS.md sessions/2026-01-01--2026-02-01.md .gitignore; do
+  STATUS=0
+  git -C "$LOCAL" check-ignore -q "$path" || STATUS=$?
+  case "$STATUS" in
+    0) ;;
+    1) TO_COMMIT="$TO_COMMIT $path" ;;
+    *) fail "check-ignore errored on $path (exit $STATUS)" ;;
+  esac
+done
+[ "$TO_COMMIT" = ' TODO.md .gitignore' ] || fail "unexpected paths to commit:$TO_COMMIT"
+
+# shellcheck disable=SC2086 # word splitting of the path list is intended
+git -C "$LOCAL" add $TO_COMMIT
+# shellcheck disable=SC2086
+git -C "$LOCAL" commit -q --only -m 'Handoff: local journal' -- $TO_COMMIT
+COMMITTED=$(git -C "$LOCAL" diff-tree --no-commit-id --name-only -r HEAD | sort)
+EXPECTED=$(printf '%s\n' '.gitignore' 'TODO.md')
+[ "$COMMITTED" = "$EXPECTED" ] || fail "unexpected committed paths: $COMMITTED"
+[ "$(git -C "$LOCAL" diff --cached --name-only)" = 'src/feature.py' ] ||
+  fail 'unrelated staged path was not preserved'
+[ -z "$(git -C "$LOCAL" ls-files SESSIONS.md sessions)" ] ||
+  fail 'local-only journal was committed'
+
 echo 'commit-scope smoke tests passed'

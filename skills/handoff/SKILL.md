@@ -23,11 +23,23 @@ extra context or notes from the user's request into the record.
    the project root.
    - If they don't exist, initialize them from the templates below. **Both
      files are mandatory after a handoff — never skip TODO.md because there
-     are no pending tasks.** The session-start hook only injects context when
-     both files exist, and TODO.md's load-bearing section is "Current state"
-     (which always has content), not the task list. With nothing pending,
-     write the current-state pointer and put "(nothing pending)" under "Pick
-     up here".
+     are no pending tasks.** The session-start hook injects TODO.md and reads
+     the journal for its latest entry, and TODO.md's load-bearing section is
+     "Current state" (which always has content), not the task list. With
+     nothing pending, write the current-state pointer and put "(nothing
+     pending)" under "Pick up here".
+   - **The journal is local-only by default.** Session narratives collect
+     private detail (local paths, names, dead ends), so they should not reach
+     a shared or public remote unless the owner chooses that. When this
+     handoff *creates* the journal in a Git repository, add the journal file
+     and its archive directory to `.gitignore` — `SESSIONS.md` and
+     `sessions/` by default, or the project's own names if its convention
+     renames them — and say so in the report-back. `TODO.md` stays committed.
+     Skip this step only when the user asks for the journal to be committed.
+   - **Never change a journal that is already tracked.** The project
+     committed it on purpose, and untracking it deletes the file from every
+     other clone on their next pull. Untrack one only when the user asks, and
+     warn them first that past entries stay in the Git history.
    - If a `TODO.md` already exists with a different structure, do not
      overwrite it — graft the missing sections (Current state, Open
      decisions) into it and say so.
@@ -170,9 +182,11 @@ delete old entries.
 - **D-numbers are project-lifetime and never reused.** Next number = highest
   D-number ever used + 1 — resolved decisions leave TODO.md, and parked ones
   keep their number, so check the journal
-  (`find . -maxdepth 2 -type f \( -path './SESSIONS.md' -o -path './sessions/*.md' \) -exec grep -hEo 'D[0-9]+' {} + | sort -u`)
+  (`find . -maxdepth 2 -type f \( -path './SESSIONS.md' -o -path './sessions/*.md' -o -path './TODO.md' -o -path './PARKED.md' \) -exec grep -hEo 'D[0-9]+' {} + | sort -u`)
   before numbering a new one. This avoids unmatched shell globs when no
-  archive directory exists and requires at least one digit after `D`.
+  archive directory exists and requires at least one digit after `D`. A
+  local-only journal is missing from a fresh clone, so also check the commit
+  subjects there: `git log --format=%s | grep -Eo 'Decision D[0-9]+' | sort -u`.
 - Keep TODO.md under ~100 lines; the narrative lives in SESSIONS.md. **If it
   exceeds that, the overflow is usually concrete work masquerading as state** —
   move the work out (see "What qualifies" above) rather than compressing the
@@ -257,7 +271,10 @@ follow-ups. Detail in [SESSIONS.md](SESSIONS.md).>
    `git mv SESSIONS.md sessions/<oldest-date>--<newest-date>.md` — the date
    range of the archived entries, so history stays greppable by date. If
    `git check-ignore -q SESSIONS.md` exits 0, the journal is local-only: use
-   plain `mv` instead, since `git mv` would fail or stage an ignored file.
+   plain `mv` instead, since `git mv` would fail or stage an ignored file,
+   and confirm `git check-ignore -q` also exits 0 for the archived file. If it
+   does not, add the archive directory to `.gitignore` before going on, or
+   the commit step would publish the archive.
 3. Start a fresh `SESSIONS.md` from the template, with a pointer line under the
    header: "Older entries archived in [`sessions/`](sessions/)."
 4. Write this session's entry as the first entry of the fresh file.
@@ -270,9 +287,10 @@ its latest entry's date.
 
 ## Commit the handoff
 
-After writing, commit the handoff so the record is durable and the journal is
-shareable — **even on a repo's first handoff, when the files are new and
-untracked:**
+After writing, commit the handoff so the record is durable — **even on a
+repo's first handoff, when the files are new and untracked.** With the default
+local-only journal, this commit carries `TODO.md` and the journal stays on
+disk only:
 
 - **Before staging, check whether the project keeps these notes local-only.**
   Run `git check-ignore -q <path>` on each file this handoff wrote. Exit 0
@@ -291,6 +309,10 @@ untracked:**
   above). `git add` them by path — this is what picks up new, untracked files
   the first time. **Never `git add -A`**: a handoff must not sweep unrelated
   working-tree changes into the commit.
+- If this handoff added the journal lines to `.gitignore`, add `.gitignore`
+  to the commit by path — unless `.gitignore` already had other uncommitted
+  changes, in which case leave it out of the commit and say so, because
+  `--only` would sweep those changes in.
 - If you rotated the journal, the `git mv` already staged the rename; also
   `git add` the fresh `SESSIONS.md` so both the archive and the new file land in
   the commit.

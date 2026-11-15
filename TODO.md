@@ -4,79 +4,86 @@ Forward-looking state. Session history lives in [SESSIONS.md](SESSIONS.md).
 
 ## Current state
 
-**As of 2026-11-15 (latest session):** baton 0.4.3 is on `main` and installed
-in both hosts; nothing in the plugin changed this session. A design session
-produced `docs/baton-learnings-design.md`: a `LEARNINGS.md` file, a promotion
-check at handoff, a workstream index in `TODO.md`, and a link to a personal
-research wiki. None of it is built. The Codex half of the 0.4.0 test is still
-not done. Detail is in the local `SESSIONS.md`.
+**As of 2026-11-15 (latest session):** baton 0.5.0 is on `main` and pushed
+(PR #13): handoff now proposes entries for a theme-first `LEARNINGS.md`, and
+this repo has its first one. Both hosts still have 0.4.3 installed, and 0.5.0
+is tested in Claude Code only, from the working copy. Parts 2 to 4 of the
+design are not built. Detail is in the local `SESSIONS.md`.
 
 ## Needs attention
 
-- ⚠️ **`docs/baton-learnings-design.md` is not committed.** This repo is
-  public, and the doc names personal projects, a work pattern, and local
-  paths (most of Part 4 and the "Existing learnings files" section). Decide:
-  commit as is, trim the personal parts first, or keep it local.
-- ⚠️ **The journal on disk can be lost by a checkout.** It is git-ignored, so
-  checking out any commit before `22f9951` overwrites it with the old tracked
-  copy. A backup from 2026-11-14 is in
-  `~/dev/baton-journal-backup-2026-11-14/`; it is safe to delete now, or keep
-  it as the journal's only backup.
+- ⚠️ **0.5.0 has not been installed fresh in either host.** It adds
+  `skills/handoff/references/learnings-split.md`, the first reference file,
+  and it is unchecked that the hosts copy that folder on install.
+- ⚠️ **`docs/baton-learnings-design.md` is still not committed.** This repo
+  is public, and the doc names personal projects, a work pattern, and local
+  paths. Decide: commit as is, trim the personal parts first, or keep it
+  local.
+- ⚠️ **The previous handoff's `TODO.md` is public in Git history** (commit
+  `5cf31e6`), with three home-directory paths. Left on purpose (see
+  SESSIONS.md 2026-11-15, the 0.5.0 entry).
+- ⚠️ **The journal has one backup, made 2026-11-14,** in a folder outside
+  this repo (named in SESSIONS.md 2026-11-14). Why the journal can be lost
+  is in `LEARNINGS.md` under "Git and the journal".
 - ⚠️ **Bundled Codex hook discovery remains unresolved.** The plugin's skills
   load, but isolated `hooks/list` probes found no plugin-sourced hook. The
-  working hook is from User config and points at
-  `/Users/jiamanwu/dev/baton/hooks/session-start.sh`, so moving this checkout
-  requires updating `~/.codex/hooks.json`. `README.md` still describes the
-  bundled-hook trust path; update it after the cause and supported fix are
-  established (see sessions/2026-07-13--2026-11-05.md, 2026-11-04).
+  working hook is from Codex user config and points at this checkout, so
+  moving the checkout requires updating that config. `README.md` still
+  describes the bundled-hook trust path; update it after the cause and
+  supported fix are established (see sessions/2026-07-13--2026-11-05.md,
+  2026-11-04).
 - ⚠️ **Settle the icon before any directory submission.** The validator says
   the listing icon can be set only once, at the first portal submission; the
   docs do not confirm this. The dark outline is faint on dark backgrounds and
   there is no dark variant (Codex has a `logoDark` field). Where Codex shows
   `logo` has not been looked at.
-- ⚠️ **Rotation's plain-`mv` path is unexercised.** The `git mv` path ran for
-  the first time on 2026-11-14; the path for a git-ignored journal has not,
-  and this repo's next rotation will be the first to use it.
-- ⚠️ **The skill cannot hand off a repo other than the session's own.** The
-  2026-09-22 entry was written by hand from a `retrieval-lab` session because
-  the work happened there. Cross-repo targeting remains a known edge.
-- ⚠️ **Changes made outside this repo on 2026-11-15** (see that journal
-  entry): user-level instructions are now one file, `~/.agents/AGENTS.md`,
-  with both hosts symlinked to it; `~/research/llm-wiki/AGENTS.md` has an
-  uncommitted change; `~/.agents/backup-instructions-2026-11-15/` can be
-  deleted. Where Codex looks for user-level skills is unverified.
+- ⚠️ **Unexercised paths.** Rotation's plain-`mv` path for a git-ignored
+  journal (this repo's next rotation will be the first; the journal is at
+  ~480 lines). The `LEARNINGS.md` split in a live session. A handoff that
+  adds a new entry under an existing theme. The `TODO.md` privacy rule.
+- ⚠️ **The skill cannot hand off a repo other than the session's own.**
+  Cross-repo targeting remains a known edge.
+- ⚠️ **Changes made outside this repo on 2026-11-15** are listed in
+  SESSIONS.md (the design-session entry): one uncommitted change in another
+  repository and one backup folder that can be deleted. Where Codex looks
+  for user-level skills is unverified.
+- ⚠️ **Cleanup:** branch `feat/learnings` is merged and can be deleted,
+  locally and on GitHub. Two scratch repos from the acceptance test can be
+  deleted (paths in SESSIONS.md 2026-11-15).
 
 ## Scratch — not yet promoted
 
 - **why skill — lazy decision archaeology:** answer one "why" question via
   git archaeology, persist the finding to `BECAUSE.md`. Full design in
   [docs/baton-why-design.md](docs/baton-why-design.md).
-- **LEARNINGS.md, promotion check, workstream index:** per-project
-  non-obvious facts by theme, a handoff step that moves cross-project
-  material to user level, and a thread index so old workstreams are found.
-  Full design in `docs/baton-learnings-design.md` (local, see Needs attention).
+- **Promotion check, workstream index:** a handoff step that moves
+  cross-project material to user level, and a thread index in `TODO.md` so
+  old workstreams are found. Parts 2 and 3 of
+  `docs/baton-learnings-design.md` (local, see Needs attention). Also not
+  built from Part 1: regrouping an existing `LEARNINGS.md` into themes.
 
 ## Pick up here
 
-1. Build Part 1 of `docs/baton-learnings-design.md` (`LEARNINGS.md`) first;
-   the promotion check and the wiki capture both use it as their source.
-   Settle the doc's open questions as they come up, starting with the
-   acceptance test.
-2. Run the Codex half of the test in a new scratch repo, in a fresh Codex
-   task: `$baton:handoff` on a first handoff, then `$baton:decide` to park one
-   decision, withdraw one, and settle the parked one. The Claude Code steps
-   and expected results are in SESSIONS.md 2026-11-14 (the 0.4.1 entry).
-3. Restart Claude Code so it loads 0.4.3, then repeat the git-ignored
-   `TODO.md` handoff in a new scratch repo and check that it still commits
-   `.gitignore` alone.
+1. Update baton to 0.5.0 in both hosts (commands in `README.md`, "Update"),
+   start a new session, and check that the installed copy contains
+   `skills/handoff/references/learnings-split.md`.
+2. Run the Codex tests in a new scratch repo, in a fresh Codex task: a first
+   `$baton:handoff` that should stop and ask about a learning candidate, then
+   the `$baton:decide` steps still owed from 0.4.0 (park one decision,
+   withdraw one, settle the parked one; steps and expected results in
+   SESSIONS.md 2026-11-14, the 0.4.1 entry).
+3. Pick the next part of the design to build. Part 3 (workstream index) only
+   changes `TODO.md` and the hook's wording; Part 2 (promotion check) writes
+   outside the repo and needs more care.
 
-**Later —** in a `retrieval-lab` session, write the first two wiki session
-notes (bootstrap versus Wilson interval, Cohen's kappa) to test the note
-template. Dogfood in mise, comparing Claude Code `/baton:handoff` with Codex
-`$baton:handoff`. Diagnose plugin-sourced hook discovery in Codex, keeping the
-working user hook until the native path is verified. Work port (repo public as
-of 2026-07-13, so plain clone works): clone on the work laptop, check the
-company's plugin policy, test — falling back to the skills-only degraded
-install from the README if plugins/hooks are locked down. Once proven in daily
-use, go through the company's formal registration to list it on the internal
-skill marketplace.
+**Later —** repeat the git-ignored `TODO.md` handoff in a new scratch repo
+and check that it still commits `.gitignore` alone. Consider moving journal
+rotation into a reference file (the handoff skill is 480 lines). In a
+`retrieval-lab` session, write the first two wiki session notes to test the
+note template. Dogfood in mise, comparing Claude Code `/baton:handoff` with
+Codex `$baton:handoff`. Diagnose plugin-sourced hook discovery in Codex,
+keeping the working user hook until the native path is verified. Work port:
+clone on the work laptop, check the company's plugin policy, test, falling
+back to the skills-only install from the README if plugins or hooks are
+locked down; once proven in daily use, register it on the internal skill
+marketplace.

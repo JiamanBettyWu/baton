@@ -2,7 +2,7 @@
   <img src="assets/icon.png" alt="baton icon: a running character holding up a relay baton" width="160">
 </p>
 
-# baton 🏃‍♀️
+# baton
 
 Decision-aware session handoffs for coding agents, with first-class support
 for Claude Code and Codex.

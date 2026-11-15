@@ -178,4 +178,105 @@ EXPECTED=$(printf '%s\n' '.gitignore' 'TODO.md')
 [ -z "$(git -C "$LOCAL" ls-files SESSIONS.md sessions)" ] ||
   fail 'local-only journal was committed'
 
+# Learnings: LEARNINGS.md is committed with TODO.md while the journal stays
+# local-only, and a later split adds the learnings/ files by path.
+LEARN="$TMP_ROOT/learnings-records"
+mkdir -p "$LEARN"
+init_repo "$LEARN"
+printf '%s\n' 'SESSIONS.md' 'sessions/' > "$LEARN/.gitignore"
+git -C "$LEARN" add .gitignore
+git -C "$LEARN" commit -q -m 'Keep journal local'
+printf '%s\n' 'staged feature work' > "$LEARN/src/feature.py"
+git -C "$LEARN" add src/feature.py
+printf '%s\n' '# TODO' > "$LEARN/TODO.md"
+printf '%s\n' '# Session log' > "$LEARN/SESSIONS.md"
+printf '%s\n' '# Learnings' '' '## Index' '- **Theme one** — scope' \
+  '- **Theme two** — scope' '' '## Theme one' '- **2026-01-01** — fact one' \
+  '- **2026-01-02** — fact two' '' '## Theme two' \
+  '- **2026-01-03** — fact three' > "$LEARN/LEARNINGS.md"
+
+TO_COMMIT=''
+for path in TODO.md SESSIONS.md LEARNINGS.md; do
+  STATUS=0
+  git -C "$LEARN" check-ignore -q "$path" || STATUS=$?
+  case "$STATUS" in
+    0) ;;
+    1) TO_COMMIT="$TO_COMMIT $path" ;;
+    *) fail "check-ignore errored on $path (exit $STATUS)" ;;
+  esac
+done
+[ "$TO_COMMIT" = ' TODO.md LEARNINGS.md' ] || fail "unexpected paths to commit:$TO_COMMIT"
+
+# shellcheck disable=SC2086 # word splitting of the path list is intended
+git -C "$LEARN" add $TO_COMMIT
+# shellcheck disable=SC2086
+git -C "$LEARN" commit -q --only -m 'Handoff: first learnings' -- $TO_COMMIT
+COMMITTED=$(git -C "$LEARN" diff-tree --no-commit-id --name-only -r HEAD | sort)
+EXPECTED=$(printf '%s\n' 'LEARNINGS.md' 'TODO.md')
+[ "$COMMITTED" = "$EXPECTED" ] || fail "unexpected committed paths: $COMMITTED"
+[ "$(git -C "$LEARN" diff --cached --name-only)" = 'src/feature.py' ] ||
+  fail 'unrelated staged path was not preserved'
+
+# The split: the skill compares the sorted non-blank, non-heading lines of the
+# theme sections before with the theme files after. Annotation lines and
+# continuation lines must survive, including one that starts with '#', and
+# index lines must not be counted.
+before_lines() {
+  awk '/^## /{keep = ($0 != "## Index"); next} keep && NF' "$1" | sort
+}
+after_lines() {
+  awk 'FNR == 1 && /^# /{next} NF' "$@" | sort
+}
+printf '%s\n' '# Learnings' '' 'How to keep this file:' '- header rule' '' \
+  '## Index' '- **Theme one** — scope' '- **Theme two** — scope' '' \
+  '## Theme one' '- **2026-01-01** — fact one' \
+  '  continues on a second line' \
+  '  Outdated as of 2026-02-01: fact one changed' \
+  '- **2026-01-02** — fact two' '  Verified 2026-02-02' \
+  '# a comment line that belongs to fact two' '' '## Theme two' \
+  '- **2026-01-03** — fact three' > "$LEARN/LEARNINGS.md"
+before_lines "$LEARN/LEARNINGS.md" > "$TMP_ROOT/before"
+[ "$(wc -l < "$TMP_ROOT/before" | tr -d ' ')" -eq 7 ] ||
+  fail "expected 6 lines to move, got: $(cat "$TMP_ROOT/before")"
+
+mkdir -p "$LEARN/learnings"
+printf '%s\n' '# Theme one' '' '- **2026-01-01** — fact one' \
+  '  continues on a second line' \
+  '  Outdated as of 2026-02-01: fact one changed' \
+  '- **2026-01-02** — fact two' '  Verified 2026-02-02' \
+  '# a comment line that belongs to fact two' \
+  > "$LEARN/learnings/theme-one.md"
+printf '%s\n' '# Theme two' '' '- **2026-01-03** — fact three' \
+  > "$LEARN/learnings/theme-two.md"
+printf '%s\n' '# Learnings' '' '## Index' \
+  '- **[Theme one](learnings/theme-one.md)** — scope' \
+  '- **[Theme two](learnings/theme-two.md)** — scope' > "$LEARN/LEARNINGS.md"
+after_lines "$LEARN"/learnings/*.md | cmp -s - "$TMP_ROOT/before" ||
+  fail 'a faithful split was reported as lossy'
+
+# A split that drops an annotation line is caught.
+grep -v 'Outdated as of' "$LEARN/learnings/theme-one.md" > "$TMP_ROOT/lossy.md"
+after_lines "$TMP_ROOT/lossy.md" "$LEARN/learnings/theme-two.md" |
+  cmp -s - "$TMP_ROOT/before" && fail 'a dropped annotation line was not caught'
+
+# So is a dropped line that starts with '#'.
+grep -v '^# a comment' "$LEARN/learnings/theme-one.md" > "$TMP_ROOT/lossy.md"
+after_lines "$TMP_ROOT/lossy.md" "$LEARN/learnings/theme-two.md" |
+  cmp -s - "$TMP_ROOT/before" && fail 'a dropped # line was not caught'
+
+# A file with no theme sections yields nothing to move: the skill stops.
+printf '%s\n' '# Devlog' '' 'Append-only.' '' '### 2026-01-01' 'long entry' \
+  > "$TMP_ROOT/dated-log.md"
+[ -z "$(before_lines "$TMP_ROOT/dated-log.md")" ] ||
+  fail 'a dated log was treated as theme sections'
+
+git -C "$LEARN" add LEARNINGS.md learnings/theme-one.md learnings/theme-two.md
+git -C "$LEARN" commit -q --only -m 'Handoff: split learnings' -- \
+  LEARNINGS.md learnings/theme-one.md learnings/theme-two.md
+COMMITTED=$(git -C "$LEARN" diff-tree --no-commit-id --name-only -r HEAD | sort)
+EXPECTED=$(printf '%s\n' 'LEARNINGS.md' 'learnings/theme-one.md' 'learnings/theme-two.md')
+[ "$COMMITTED" = "$EXPECTED" ] || fail "unexpected committed paths: $COMMITTED"
+[ "$(git -C "$LEARN" diff --cached --name-only)" = 'src/feature.py' ] ||
+  fail 'unrelated staged path was not preserved'
+
 echo 'commit-scope smoke tests passed'

@@ -1,3 +1,6 @@
 # Session journal stays local-only; TODO.md is the public current state.
 SESSIONS.md
 sessions/
+
+# macOS folder metadata
+.DS_Store

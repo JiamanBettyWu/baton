@@ -12,7 +12,7 @@ different pause: **work stopped because a decision left the room**. When work
 resumes, the important context is which option was chosen and which parts of
 the plan that invalidates.
 
-`baton` maintains two plain-Markdown files at the project root:
+`baton` maintains plain-Markdown files at the project root:
 
 - **`TODO.md`** — forward-looking state, refreshed at each handoff: a short
   current-state pointer, open decisions with options and trade-offs, and the
@@ -21,9 +21,14 @@ the plan that invalidates.
   session, with decisions recorded alongside their reasoning. It is
   **local-only by default**: the first handoff adds it to `.gitignore`, so
   session detail is not pushed. See [Journal privacy](#journal-privacy).
+- **`LEARNINGS.md`** (optional) — what is true in the project that is not
+  obvious: environment quirks, tooling behavior, setup steps that were hard
+  to work out. Grouped by theme with an index at the top, and committed. See
+  [Learnings](#learnings).
 
 A `SessionStart` hook injects `TODO.md` plus the latest journal entry's title
-when a session starts or resumes. The hook activates when the journal exists,
+when a session starts or resumes, and says when to look in the journal and in
+`LEARNINGS.md`. It does not print either of them. The hook activates when the journal exists,
 or when `TODO.md` points at `SESSIONS.md` (a clone without the local journal),
 so a project with an unrelated `TODO.md` is unaffected.
 
@@ -31,7 +36,7 @@ so a project with an unrelated `TODO.md` is unaffected.
 
 | Workflow | Claude Code | Codex | What it does |
 | --- | --- | --- | --- |
-| Handoff | `/baton:handoff [notes]` | `$handoff` with optional notes | Sweeps for loose ends and stale docs, appends to `SESSIONS.md`, refreshes `TODO.md`, and creates a scoped commit that never pushes |
+| Handoff | `/baton:handoff [notes]` | `$handoff` with optional notes | Sweeps for loose ends and stale docs, appends to `SESSIONS.md`, refreshes `TODO.md`, proposes entries for `LEARNINGS.md`, and creates a scoped commit that never pushes |
 | Decide | `/baton:decide <outcome>` | `$decide` with the outcome | Logs a decision and its reasoning, promotes the matching branch of the plan (or parks or withdraws the decision), flags invalidated work, and creates a scoped records-only commit |
 
 Both workflows are explicit-only. They do not run unless the user invokes the
@@ -133,6 +138,26 @@ exist in other clones.
   archive exists). Two warnings: entries already pushed stay in the Git
   history, and every other clone loses its copy of the file on the next pull,
   so back the journal up there first.
+
+## Learnings
+
+The test for an entry: would a new session waste time rediscovering this?
+
+- **How entries get in.** At each handoff, baton proposes candidates from the
+  session and writes only the ones you confirm. Once the file exists you can also ask at any
+  time ("add that to learnings"); the file's header states the format, so
+  the agent does not need the handoff skill loaded.
+- **Nothing private.** The file is committed while the journal is local-only,
+  so baton rewords or holds back anything with a name, a path outside the
+  repository, or a secret.
+- **Nothing is deleted.** An entry that stops being true gets an
+  `Outdated as of <date>: <what is true now>` line under it; a re-checked one
+  gets `Verified <date>`.
+- **Growth.** Past ~500 lines, baton offers to split the file into
+  `learnings/<theme>.md`, with `LEARNINGS.md` kept as the index.
+- **An existing `LEARNINGS.md`** in another shape (a dated log, a report) is
+  never restructured without asking, and a header that says "append-only" is
+  followed.
 
 ## Notes
 

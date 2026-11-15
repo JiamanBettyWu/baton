@@ -36,12 +36,12 @@ if [ -f "$TODO" ] && [ -f "$SESSIONS" ]; then
   cat "$TODO"
   echo
   LATEST=$(grep -m1 '^## ' "$SESSIONS")
-  echo "(Latest journal entry: ${LATEST#\#\# }. Read the relevant dated entry in SESSIONS.md when a task resumes an older thread. Suggest the handoff skill before the session ends; if the user reports a team decision, suggest the decide skill.)"
+  echo "(Latest journal entry: ${LATEST#\#\# }. When a task resumes an older thread or TODO.md cites an entry by date, search SESSIONS.md and sessions/ by date or keyword and read that one entry. If LEARNINGS.md exists, read its index and then the matching theme before work in an area the index names, when a failure looks like tooling or environment rather than the code being written, and before repeating a setup step. Suggest the handoff skill before the session ends; if the user reports a team decision, suggest the decide skill.)"
 elif [ -f "$SESSIONS" ]; then
   # Journal without a forward-looking file: still surface continuity, and
   # flag that the next handoff should initialize TODO.md.
   LATEST=$(grep -m1 '^## ' "$SESSIONS")
-  echo "This project keeps a dated session journal in SESSIONS.md (latest entry: ${LATEST#\#\# }) but has no TODO.md current-state file yet. Read the latest journal entry to catch up; the next handoff should initialize TODO.md."
+  echo "This project keeps a dated session journal in SESSIONS.md (latest entry: ${LATEST#\#\# }) but has no TODO.md current-state file yet. Read the latest journal entry to catch up; the next handoff should initialize TODO.md. If LEARNINGS.md exists, read its index and then the matching theme before work in an area the index names."
 elif baton_todo "$TODO"; then
   # Current state without a journal: the journal is local-only and this
   # checkout does not have it.
@@ -49,7 +49,7 @@ elif baton_todo "$TODO"; then
   echo
   cat "$TODO"
   echo
-  echo "(Suggest the handoff skill before the session ends; it will start a local journal here. If the user reports a team decision, suggest the decide skill.)"
+  echo "(If LEARNINGS.md exists, read its index and then the matching theme before work in an area the index names, when a failure looks like tooling or environment rather than the code being written, and before repeating a setup step. Suggest the handoff skill before the session ends; it will start a local journal here. If the user reports a team decision, suggest the decide skill.)"
 fi
 
 exit 0

@@ -1,7 +1,7 @@
 {
   "name": "baton",
   "description": "Decision-aware session handoffs for coding agents.",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "icon": "./assets/icon.png",
   "author": {
     "name": "Betty Wu"

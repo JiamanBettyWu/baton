@@ -4,12 +4,12 @@ Forward-looking state. Session history lives in [SESSIONS.md](SESSIONS.md).
 
 ## Current state
 
-**As of 2026-11-14 (latest session):** baton 0.4.0 is on `main` (PR #7 and
-PR #8). The decide skill records parked and withdrawn decisions, with parked
-ones kept in `PARKED.md`, and the session journal is local-only by default;
-this repo's `SESSIONS.md` and `sessions/` are git-ignored. Both hosts are
-reinstalled at 0.4.0, but no fresh session has loaded it and the new wording
-has not been run by a fresh model. Detail is in the local `SESSIONS.md`.
+**As of 2026-11-14 (latest session):** baton 0.4.1 is on `main` (PR #9), and
+the plugin icon is in at `assets/icon.png` and shown in the README (PR #10).
+The 0.4.0 behavior passed in two Claude Code scratch repos; 0.4.1 is a
+one-clause wording fix in the handoff skill found by that test. Both hosts are
+reinstalled at 0.4.1, but no fresh session has loaded it, and the Codex half
+of the test is not done. Detail is in the local `SESSIONS.md`.
 
 ## Needs attention
 
@@ -25,12 +25,10 @@ has not been run by a fresh model. Detail is in the local `SESSIONS.md`.
   requires updating `~/.codex/hooks.json`. `README.md` still describes the
   bundled-hook trust path; update it after the cause and supported fix are
   established (see sessions/2026-07-13--2026-11-05.md, 2026-11-04).
-- ⚠️ **Strict Claude plugin validation reports `ICON_MISSING`**, so
-  `claude plugin validate . --strict` exits nonzero. A candidate exists at
-  `/Users/jiamanwu/Downloads/baton-icon-512.png` but looks like the Claude
-  Code mascot; Betty deferred the choice. The icon may be fixed after the
-  first portal submission, so settle it before any listing (see SESSIONS.md
-  2026-11-14).
+- ⚠️ **Installed copies do not have the icon.** PR #10 added it without a
+  version bump, and both hosts were reinstalled at 0.4.1 before it merged. How
+  the icon renders in a host or in the plugin directory is unchecked, and the
+  listing icon can be set only once, at the first portal submission.
 - ⚠️ **Rotation's plain-`mv` path is unexercised.** The `git mv` path ran for
   the first time on 2026-11-14; the path for a git-ignored journal has not,
   and this repo's next rotation will be the first to use it.
@@ -46,12 +44,12 @@ has not been run by a fresh model. Detail is in the local `SESSIONS.md`.
 
 ## Pick up here
 
-1. Start a fresh Claude Code session and a fresh Codex task and confirm each
-   loads baton 0.4.0. In a scratch repo: run a first handoff and check that
-   the journal is ignored and the commit holds `TODO.md` and `.gitignore`;
-   then park one decision, withdraw one, and settle the parked one.
-2. In a scratch repo with `TODO.md` in `.gitignore`, run a handoff and check
-   that no ignored file is committed (carried over from 0.2.2).
+1. Run the Codex half of the test in a new scratch repo, in a fresh Codex task
+   that loads 0.4.1: `$baton:handoff` on a first handoff, then `$baton:decide`
+   to park one decision, withdraw one, and settle the parked one. The Claude
+   Code steps and expected results are in SESSIONS.md 2026-11-14.
+2. In a fresh session on 0.4.1, repeat the git-ignored `TODO.md` handoff and
+   check that it still commits `.gitignore` alone.
 
 **Later —** dogfood in mise, comparing Claude Code `/baton:handoff` with Codex
 `$baton:handoff`. Diagnose plugin-sourced hook discovery in Codex, keeping the

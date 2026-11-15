@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/icon.png" alt="baton icon: a running character holding up a relay baton" width="160">
+</p>
+
 # baton 🏃‍♀️
 
 Decision-aware session handoffs for coding agents, with first-class support

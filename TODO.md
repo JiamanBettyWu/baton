@@ -47,9 +47,6 @@ design are not built. Detail is in the local `SESSIONS.md`.
   SESSIONS.md (the design-session entry): one uncommitted change in another
   repository and one backup folder that can be deleted. Where Codex looks
   for user-level skills is unverified.
-- ⚠️ **Cleanup:** branch `feat/learnings` is merged and can be deleted,
-  locally and on GitHub. Two scratch repos from the acceptance test can be
-  deleted (paths in SESSIONS.md 2026-11-15).
 
 ## Scratch — not yet promoted
 

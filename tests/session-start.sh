@@ -50,6 +50,16 @@ assert_contains "$OUTPUT" '2026-09-22 (latest fixture)'
 assert_not_contains "$OUTPUT" 'LATEST-JOURNAL-BODY'
 assert_not_contains "$OUTPUT" 'OLDER-JOURNAL-BODY'
 
+# The closing sentence says when to look things up; LEARNINGS.md is pointed
+# at, never printed.
+printf '%s\n' '# Learnings' '' '## Index' '- **Theme** — LEARNINGS-BODY-SENTINEL' \
+  > "$CLAUDE_FIXTURE/LEARNINGS.md"
+OUTPUT=$(cd "$TMP_ROOT" && CLAUDE_PROJECT_DIR="$CLAUDE_FIXTURE" "$HOOK")
+assert_contains "$OUTPUT" 'If LEARNINGS.md exists, read its index'
+assert_contains "$OUTPUT" 'search SESSIONS.md and sessions/ by date or keyword'
+assert_not_contains "$OUTPUT" 'LEARNINGS-BODY-SENTINEL'
+rm "$CLAUDE_FIXTURE/LEARNINGS.md"
+
 # Codex-style discovery from a nested working directory via the Git root.
 CODEX_FIXTURE="$TMP_ROOT/codex-project"
 write_todo "$CODEX_FIXTURE"
@@ -120,6 +130,10 @@ printf '%s\n' '# TODO' '' 'History lives in [SESSIONS.md](SESSIONS.md).' '' \
 OUTPUT=$(CLAUDE_PROJECT_DIR="$NO_JOURNAL" "$HOOK")
 assert_contains "$OUTPUT" 'NO-JOURNAL-SENTINEL'
 assert_contains "$OUTPUT" 'is not in this checkout'
+# A fresh clone has no journal, so LEARNINGS.md is the knowledge it does get:
+# the pointer is present and the journal-search wording is not.
+assert_contains "$OUTPUT" 'If LEARNINGS.md exists, read its index'
+assert_not_contains "$OUTPUT" 'search SESSIONS.md'
 
 # The same holds for Codex-style discovery from the current folder.
 OUTPUT=$(cd "$NO_JOURNAL" && env -u CLAUDE_PROJECT_DIR "$HOOK")

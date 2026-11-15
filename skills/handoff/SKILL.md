@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: Create a decision-aware end-of-session handoff when the user explicitly asks to pause or hand off work. Sweep loose ends, update the project's current-state and journal files, and commit only the handoff records.
+description: Create a decision-aware end-of-session handoff when the user explicitly asks to pause or hand off work. Sweep loose ends, update the project's current-state and journal files, propose lasting non-obvious facts for LEARNINGS.md, and commit only the handoff records.
 disable-model-invocation: true
 ---
 
@@ -43,6 +43,10 @@ extra context or notes from the user's request into the record.
    - If a `TODO.md` already exists with a different structure, do not
      overwrite it — graft the missing sections (Current state, Open
      decisions) into it and say so.
+   - **`LEARNINGS.md`** (what is true here that is not obvious) is a third,
+     optional file at the project root. It is committed, like `TODO.md`. A
+     handoff creates it only when the user confirms a first entry; see
+     "Maintain LEARNINGS.md" below.
 
 ## Before writing: sweep the session
 
@@ -80,6 +84,12 @@ drops. Fold what you find into the files below — don't just mention it in chat
   `docs/<idea>.md`), leaving a one-liner in Scratch: title, one-sentence hook,
   link. Flag, don't auto-move — whether an idea deserves promotion is the
   owner's call, and a silent relocation is easy to lose.
+- **Learning candidates → ask now, before any file is written:** look for
+  facts from this session that pass the test in "Maintain LEARNINGS.md"
+  below. If there are any, **stop here, list them, and wait for the user's
+  answer.** Do not write the journal, `TODO.md`, or the commit first and
+  offer the candidates in the report-back: by then the handoff commit is
+  made and the learning is left out of it.
 
 ## What a handoff does
 
@@ -145,6 +155,83 @@ delete old entries.
   A parked decision is not resolved: it keeps its one line, and its full
   record stays in `PARKED.md`.
 
+## Maintain LEARNINGS.md
+
+`LEARNINGS.md` holds what is true in this project that is not obvious:
+environment quirks, tooling behavior, setup steps that were hard to work out.
+The journal answers "what happened, and when"; this file answers "what do I
+need to know before I work in this area". In a fresh clone the local-only
+journal is absent, so this file is the only accumulated knowledge a new
+checkout gets.
+
+**Test for an entry:** would a new session waste time rediscovering this? A
+fact that is obvious from the code, or that matters only to this session, does
+not belong.
+
+**Propose, wait, then write.** This is a question to the user in the middle
+of the handoff, like the confirmation before a journal rotation. Ask it
+before writing any handoff file, and continue only after the answer:
+
+1. Collect candidates from the session. On the handoff that would create the
+   file, also look at `TODO.md` "Needs attention" for items that are lasting
+   facts, not only pending actions. If the file already exists, also read
+   the themes this session worked in and check their entries against what
+   the session showed: an entry the session disproved is a candidate for an
+   `Outdated as of` line, and one the session re-checked is a candidate for
+   a `Verified` line. Propose these with the new entries.
+2. **Screen each candidate for private detail.** The file is committed while
+   the journal is local-only, so an entry must hold no person's name, no
+   path outside the repository, no secret, and nothing about another project.
+   Reword the candidate so the fact survives without the detail; if it
+   cannot, leave it in the journal and do not propose it.
+3. Show the user the candidates, each with the theme it would go under, and
+   wait. Write the ones they confirm, in the same handoff, so that
+   `LEARNINGS.md` is in the handoff commit and the journal entry can cite
+   it. If they decline all of them, go on without the file. With no
+   candidates, ask nothing and write nothing; never create an empty file.
+4. A fact copied from "Needs attention" stays there too, for as long as it
+   still needs the owner's action. Copy, do not move.
+
+**Adding an entry.** Read the index first. Put the entry under the theme
+whose scope phrase fits, as `- **<YYYY-MM-DD>** — <fact>`, newest last. Start
+a new theme only when no scope phrase fits, and add its index line: the theme
+name plus a short phrase saying what belongs there. That phrase is what stops
+near-duplicate themes, so write it for the next reader. Update the index
+whenever a theme is added, renamed, or removed.
+
+**Nothing is deleted.** A stale gotcha is worse than none, but the file is
+also a record of what was hard:
+
+- When this session shows an entry is no longer true, add a line under it:
+  `Outdated as of <YYYY-MM-DD>: <what is true now>`. The entry stays.
+- When this session re-checks an entry and it still holds, add
+  `Verified <YYYY-MM-DD>` under it.
+- Entries may move between themes. Wording and dates stay unchanged.
+
+**A `LEARNINGS.md` that already exists in another shape.** Projects keep
+dated logs, findings reports, and other files under this name.
+
+- Never restructure, regroup, or prune it without asking.
+- If its header declares rules (for example "append-only"), follow them: add
+  new entries in the file's own format, and correct a wrong entry by
+  appending a dated correction, as in the journal.
+- If the project's instruction files name a different file for lessons or
+  gotchas, use that file and its format instead.
+
+**When it grows.** Before adding entries, check the length
+(`wc -l LEARNINGS.md`, or the theme file's length after a split). Past ~500
+lines, a file in the theme-first shape above is split into
+`learnings/<theme-slug>.md` files, with `LEARNINGS.md` kept as the index. A
+file in any other shape is not split: mention its length and leave it alone.
+**Announce the split and confirm first**, as with journal rotation, then
+**read [references/learnings-split.md](references/learnings-split.md) and
+follow it exactly.** Do not split from memory: the procedure includes a check
+that no line was lost. Nothing is deleted to make room.
+
+**Journal and learnings do not repeat each other.** The journal entry tells
+the story and cites the learning ("recorded in LEARNINGS.md under <theme>");
+it does not restate the fact.
+
 ## Rules
 
 - **Be specific.** `path/to/file.py:123`, branch names, ticket IDs, exact
@@ -168,12 +255,16 @@ delete old entries.
   does not fall back to the Git root; …" — citing the entry by date. The old
   entry stays unchanged as history, but the correction stops the error from
   propagating. Also check whether the corrected claim leaked into TODO.md's
-  current state, and fix it there.
+  current state, and fix it there. If it is an entry in `LEARNINGS.md`,
+  propose an `Outdated as of` line under that entry.
 - **Point to history, don't inline it.** Work is not linear — when a next
   step resumes an older thread, cite the journal entry by date ("see
   SESSIONS.md 2026-07-10") instead of re-summarizing it.
 - **Capture the non-obvious** in the journal entry: environment quirks, dead
-  ends explored, assumptions baked into the code.
+  ends explored, assumptions baked into the code. The ones a later session
+  would have to rediscover are also learning candidates (see "Maintain
+  LEARNINGS.md"); once one is confirmed and written there, the journal cites
+  it.
 - **Don't duplicate the project's own knowledge files.** If the repo keeps a
   decisions/lessons/ADR doc and this session already recorded something there,
   the journal cites it ("principles recorded in docs/lessons_learned.md §13–16")
@@ -259,6 +350,38 @@ follow-ups. Detail in [SESSIONS.md](SESSIONS.md).>
 2. <second>
 ```
 
+`LEARNINGS.md` (created only with a confirmed first entry):
+
+```markdown
+# Learnings
+
+What is true in this project that is not obvious. Test for an entry: would a
+new session waste time rediscovering this? This file is committed, so entries
+hold nothing private: no names, no paths outside the repository, no secrets.
+
+How to keep this file:
+
+- Find the theme in the index and add the entry under it as
+  `- **<YYYY-MM-DD>** — <fact>`. Start a new theme only when no scope phrase
+  fits, and add its index line.
+- Never delete an entry. When one stops being true, add a line under it:
+  `Outdated as of <YYYY-MM-DD>: <what is true now>`. When one is re-checked
+  and still holds, add `Verified <YYYY-MM-DD>`.
+- Entries may move between themes; wording and dates stay unchanged.
+
+## Index
+
+- **<Theme>** — <short scope phrase: what belongs under this theme>
+
+## <Theme>
+
+- **<YYYY-MM-DD>** — <the fact, with full identifiers>
+```
+
+The header carries the upkeep rules on purpose. An agent asked mid-session to
+"add that to learnings" has not loaded this skill, and the header is the only
+instruction it sees. Keep the header when editing the file.
+
 ## Rotate SESSIONS.md when it grows
 
 **Before** appending this session's entry, check the journal's length
@@ -306,8 +429,9 @@ disk only:
     if it matches a pattern, which is correct here — the project committed it
     on purpose.
 - Stage **only** the files this handoff wrote or updated (`TODO.md`,
-  `SESSIONS.md`, plus any doc the sweep updated under the traceable-drift rule
-  above). `git add` them by path — this is what picks up new, untracked files
+  `SESSIONS.md`, `LEARNINGS.md` and any `learnings/` files if entries were
+  added or the file was split, plus any doc the sweep updated under the
+  traceable-drift rule above). `git add` them by path — this is what picks up new, untracked files
   the first time. **Never `git add -A`**: a handoff must not sweep unrelated
   working-tree changes into the commit.
 - If this handoff added the journal lines to `.gitignore`, add `.gitignore`
@@ -337,5 +461,9 @@ After committing, report back:
 - Anything the sweep surfaced for their action — the "Needs attention" items,
   any docs you auto-updated under the traceable-drift rule, and any stale docs
   you flagged but left for them to confirm.
-- Which files you touched, whether you rotated the journal, the commit SHA
-  (if any), and which git-ignored paths were left out of the commit.
+- Which learnings you added, marked outdated, or verified, and under which
+  theme; and which candidates you held back because they could not be
+  written without private detail.
+- Which files you touched, whether you rotated the journal or split
+  `LEARNINGS.md`, the commit SHA (if any), and which git-ignored paths were
+  left out of the commit.

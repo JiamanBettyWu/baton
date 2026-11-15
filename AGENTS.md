@@ -8,6 +8,11 @@ only for discovery, installation, or invocation policy.
 
 - `plugin.json` owns portable plugin identity and metadata.
 - `skills/*/SKILL.md` owns workflow instructions.
+- `skills/*/references/*.md` holds a procedure that runs rarely (for
+  example, splitting a long `LEARNINGS.md`). `SKILL.md` keeps the trigger,
+  the confirmation step, and a link that tells the agent to read the file
+  before acting. Each reference file opens by saying when to read it, then
+  gives numbered steps and the check that proves the result.
 - `hooks/hooks.json` and `hooks/session-start.sh` own startup behavior.
 - `.claude-plugin/` and `.agents/` are thin host adapters.
   Do not copy workflow instructions into them.

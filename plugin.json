@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "baton",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "description": "Decision-aware session handoffs for coding agents.",
   "author": {
     "name": "Betty Wu",

@@ -299,7 +299,8 @@ disk only:
   - An ignored file is one the project keeps local-only: **leave it out** of
     both `git add` and the commit pathspec below, and report it as skipped.
     Commit the remaining files as usual. If every file is ignored, skip the
-    commit entirely.
+    commit entirely — unless this handoff added the journal lines to
+    `.gitignore`, in which case commit `.gitignore` alone (see below).
   - **Never force it:** no `git add -f`, and no `--no-index` on the check.
     Without `--no-index`, an already-tracked file reports as not ignored even
     if it matches a pattern, which is correct here — the project committed it

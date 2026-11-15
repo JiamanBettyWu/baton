@@ -113,6 +113,7 @@ JOURNAL_ONLY="$TMP_ROOT/journal-only"
 write_sessions "$JOURNAL_ONLY"
 OUTPUT=$(CLAUDE_PROJECT_DIR="$JOURNAL_ONLY" "$HOOK")
 assert_contains "$OUTPUT" 'has no TODO.md current-state file yet'
+assert_contains "$OUTPUT" 'If LEARNINGS.md exists, read its index'
 assert_contains "$OUTPUT" '2026-09-22 (latest fixture)'
 assert_not_contains "$OUTPUT" 'LATEST-JOURNAL-BODY'
 

@@ -219,22 +219,24 @@ EXPECTED=$(printf '%s\n' 'LEARNINGS.md' 'TODO.md')
 
 # The split: the skill compares the sorted non-blank, non-heading lines of the
 # theme sections before with the theme files after. Annotation lines and
-# continuation lines must survive, and index lines must not be counted.
+# continuation lines must survive, including one that starts with '#', and
+# index lines must not be counted.
 before_lines() {
-  awk '/^## /{keep = ($0 != "## Index")} keep && NF && !/^#/' "$1" | sort
+  awk '/^## /{keep = ($0 != "## Index"); next} keep && NF' "$1" | sort
 }
 after_lines() {
-  cat "$@" | awk 'NF && !/^#/' | sort
+  awk 'FNR == 1 && /^# /{next} NF' "$@" | sort
 }
 printf '%s\n' '# Learnings' '' 'How to keep this file:' '- header rule' '' \
   '## Index' '- **Theme one** — scope' '- **Theme two** — scope' '' \
   '## Theme one' '- **2026-01-01** — fact one' \
   '  continues on a second line' \
   '  Outdated as of 2026-02-01: fact one changed' \
-  '- **2026-01-02** — fact two' '  Verified 2026-02-02' '' '## Theme two' \
+  '- **2026-01-02** — fact two' '  Verified 2026-02-02' \
+  '# a comment line that belongs to fact two' '' '## Theme two' \
   '- **2026-01-03** — fact three' > "$LEARN/LEARNINGS.md"
 before_lines "$LEARN/LEARNINGS.md" > "$TMP_ROOT/before"
-[ "$(wc -l < "$TMP_ROOT/before" | tr -d ' ')" -eq 6 ] ||
+[ "$(wc -l < "$TMP_ROOT/before" | tr -d ' ')" -eq 7 ] ||
   fail "expected 6 lines to move, got: $(cat "$TMP_ROOT/before")"
 
 mkdir -p "$LEARN/learnings"
@@ -242,6 +244,7 @@ printf '%s\n' '# Theme one' '' '- **2026-01-01** — fact one' \
   '  continues on a second line' \
   '  Outdated as of 2026-02-01: fact one changed' \
   '- **2026-01-02** — fact two' '  Verified 2026-02-02' \
+  '# a comment line that belongs to fact two' \
   > "$LEARN/learnings/theme-one.md"
 printf '%s\n' '# Theme two' '' '- **2026-01-03** — fact three' \
   > "$LEARN/learnings/theme-two.md"
@@ -255,6 +258,11 @@ after_lines "$LEARN"/learnings/*.md | cmp -s - "$TMP_ROOT/before" ||
 grep -v 'Outdated as of' "$LEARN/learnings/theme-one.md" > "$TMP_ROOT/lossy.md"
 after_lines "$TMP_ROOT/lossy.md" "$LEARN/learnings/theme-two.md" |
   cmp -s - "$TMP_ROOT/before" && fail 'a dropped annotation line was not caught'
+
+# So is a dropped line that starts with '#'.
+grep -v '^# a comment' "$LEARN/learnings/theme-one.md" > "$TMP_ROOT/lossy.md"
+after_lines "$TMP_ROOT/lossy.md" "$LEARN/learnings/theme-two.md" |
+  cmp -s - "$TMP_ROOT/before" && fail 'a dropped # line was not caught'
 
 # A file with no theme sections yields nothing to move: the skill stops.
 printf '%s\n' '# Devlog' '' 'Append-only.' '' '### 2026-01-01' 'long entry' \

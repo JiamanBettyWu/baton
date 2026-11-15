@@ -9,9 +9,9 @@ A split only moves lines. It never rewords, prunes, or deletes.
 ## Split LEARNINGS.md into theme files
 
 1. Save the content to be moved, in a temporary directory outside the
-   repository: every non-blank, non-heading line of the theme sections,
-   sorted.
-   `awk '/^## /{keep = ($0 != "## Index")} keep && NF && !/^#/' LEARNINGS.md | sort > <tmp>/before`
+   repository: every non-blank line of the theme sections except the `## <Theme>`
+   headings, sorted.
+   `awk '/^## /{keep = ($0 != "## Index"); next} keep && NF' LEARNINGS.md | sort > <tmp>/before`
    **If that file is empty, stop:** the file is not in the shape this
    procedure expects.
 2. Look for entries that should also be a rule in the project's instruction
@@ -25,9 +25,11 @@ A split only moves lines. It never rewords, prunes, or deletes.
    file the index links to, because the header is what a later reader
    follows.
 5. Check that nothing was lost:
-   `cat learnings/*.md | awk 'NF && !/^#/' | sort | cmp - <tmp>/before`.
-   It must report no difference before anything is committed. If it does
-   report one, fix the files; do not commit.
+   `awk 'FNR == 1 && /^# /{next} NF' learnings/*.md | sort | cmp - <tmp>/before`.
+   Only the `# <Theme>` title on each file's first line is left out, so any
+   other line that went missing is reported. It must report no difference
+   before anything is committed. If it does report one, fix the files; do
+   not commit.
 
 ## Split one theme file in two
 
@@ -35,13 +37,13 @@ When one file in `learnings/` passes ~500 lines:
 
 1. Agree the two new theme names and their scope phrases with the user.
 2. Save the old file's lines:
-   `awk 'NF && !/^#/' learnings/<old-slug>.md | sort > <tmp>/before`
+   `awk 'FNR == 1 && /^# /{next} NF' learnings/<old-slug>.md | sort > <tmp>/before`
 3. Move the lines, unchanged, into the two new files, each starting with
    `# <Theme>`. Remove the old file.
 4. Replace the old theme's index line in `LEARNINGS.md` with the two new
    lines.
 5. Check those two files alone against the old one:
-   `cat learnings/<new-a>.md learnings/<new-b>.md | awk 'NF && !/^#/' | sort | cmp - <tmp>/before`.
+   `awk 'FNR == 1 && /^# /{next} NF' learnings/<new-a>.md learnings/<new-b>.md | sort | cmp - <tmp>/before`.
    It must report no difference before anything is committed.
 
 Keep `learnings/` flat; never nest folders inside it.

@@ -41,7 +41,7 @@ elif [ -f "$SESSIONS" ]; then
   # Journal without a forward-looking file: still surface continuity, and
   # flag that the next handoff should initialize TODO.md.
   LATEST=$(grep -m1 '^## ' "$SESSIONS")
-  echo "This project keeps a dated session journal in SESSIONS.md (latest entry: ${LATEST#\#\# }) but has no TODO.md current-state file yet. Read the latest journal entry to catch up; the next handoff should initialize TODO.md."
+  echo "This project keeps a dated session journal in SESSIONS.md (latest entry: ${LATEST#\#\# }) but has no TODO.md current-state file yet. Read the latest journal entry to catch up; the next handoff should initialize TODO.md. If LEARNINGS.md exists, read its index and then the matching theme before work in an area the index names."
 elif baton_todo "$TODO"; then
   # Current state without a journal: the journal is local-only and this
   # checkout does not have it.

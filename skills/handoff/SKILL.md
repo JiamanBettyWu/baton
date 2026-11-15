@@ -250,6 +250,17 @@ it does not restate the fact.
   the whole entry; entries usually mix tested results and readings. Don't tag
   defensively — the tag marks the read-vs-tested distinction, not general
   uncertainty.
+- **Keep private detail out of committed files.** With the default
+  local-only journal, `TODO.md` is committed and the journal is not, so the
+  two are not equally private. Before writing `TODO.md`, check
+  `git check-ignore -q TODO.md`; when it is not ignored, `TODO.md` holds no
+  secret, no path outside the repository (a home-directory or
+  machine-specific path), and no person's name unless the reader needs to
+  know who a decision or flag is waiting on. Put the detail in the journal
+  entry and point at it: "the export path is in SESSIONS.md 2026-07-10". If
+  the existing `TODO.md` already carries such detail, do not rewrite it
+  silently; flag it under "Needs attention". `LEARNINGS.md` has its own,
+  stricter screen (see "Maintain LEARNINGS.md").
 - **Correct, never edit.** When this session disproves an earlier journal
   entry, the new entry says so explicitly — "corrects 2026-07-10: the hook
   does not fall back to the Git root; …" — citing the entry by date. The old

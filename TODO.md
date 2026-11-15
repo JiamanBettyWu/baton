@@ -4,12 +4,12 @@ Forward-looking state. Session history lives in [SESSIONS.md](SESSIONS.md).
 
 ## Current state
 
-**As of 2026-11-14 (latest session):** baton 0.4.1 is on `main` (PR #9), and
-the plugin icon is in at `assets/icon.png` and shown in the README (PR #10).
-The 0.4.0 behavior passed in two Claude Code scratch repos; 0.4.1 is a
-one-clause wording fix in the handoff skill found by that test. Both hosts are
-reinstalled at 0.4.1, but no fresh session has loaded it, and the Codex half
-of the test is not done. Detail is in the local `SESSIONS.md`.
+**As of 2026-11-14 (latest session):** baton 0.4.3 is on `main` and installed
+in both hosts (PRs #9 to #12). The plugin icon is in `assets/`, named in both
+manifests, shown in the README, and confirmed visible in Codex's composer
+list. The 0.4.0 behavior passed in two Claude Code scratch repos, but the
+Codex half of that test is not done and no fresh session has run the 0.4.1
+handoff wording. Detail is in the local `SESSIONS.md`.
 
 ## Needs attention
 
@@ -25,10 +25,11 @@ of the test is not done. Detail is in the local `SESSIONS.md`.
   requires updating `~/.codex/hooks.json`. `README.md` still describes the
   bundled-hook trust path; update it after the cause and supported fix are
   established (see sessions/2026-07-13--2026-11-05.md, 2026-11-04).
-- ⚠️ **Installed copies do not have the icon.** PR #10 added it without a
-  version bump, and both hosts were reinstalled at 0.4.1 before it merged. How
-  the icon renders in a host or in the plugin directory is unchecked, and the
-  listing icon can be set only once, at the first portal submission.
+- ⚠️ **Settle the icon before any directory submission.** The validator says
+  the listing icon can be set only once, at the first portal submission; the
+  docs do not confirm this. The dark outline is faint on dark backgrounds and
+  there is no dark variant (Codex has a `logoDark` field). Where Codex shows
+  `logo` has not been looked at.
 - ⚠️ **Rotation's plain-`mv` path is unexercised.** The `git mv` path ran for
   the first time on 2026-11-14; the path for a git-ignored journal has not,
   and this repo's next rotation will be the first to use it.
@@ -44,12 +45,13 @@ of the test is not done. Detail is in the local `SESSIONS.md`.
 
 ## Pick up here
 
-1. Run the Codex half of the test in a new scratch repo, in a fresh Codex task
-   that loads 0.4.1: `$baton:handoff` on a first handoff, then `$baton:decide`
-   to park one decision, withdraw one, and settle the parked one. The Claude
-   Code steps and expected results are in SESSIONS.md 2026-11-14.
-2. In a fresh session on 0.4.1, repeat the git-ignored `TODO.md` handoff and
-   check that it still commits `.gitignore` alone.
+1. Run the Codex half of the test in a new scratch repo, in a fresh Codex
+   task: `$baton:handoff` on a first handoff, then `$baton:decide` to park one
+   decision, withdraw one, and settle the parked one. The Claude Code steps
+   and expected results are in SESSIONS.md 2026-11-14 (the 0.4.1 entry).
+2. Restart Claude Code so it loads 0.4.3, then repeat the git-ignored
+   `TODO.md` handoff in a new scratch repo and check that it still commits
+   `.gitignore` alone.
 
 **Later —** dogfood in mise, comparing Claude Code `/baton:handoff` with Codex
 `$baton:handoff`. Diagnose plugin-sourced hook discovery in Codex, keeping the
